@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<node name="/org/gnome/policyman/helper">
+  <interface name="org.gnome.policyman.helper">
+    <method name="GetActions">
+      <arg type="av" name="x" direction="out" />
+    </method>
+    <method name="SetActions">
+      <arg type="av" name="actions" direction="in" />
+    </method>
+  </interface>
+</node>

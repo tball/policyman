@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.gnome.policyman.helper
+Exec=@CMAKE_INSTALL_FULL_LIBEXECDIR@/policyman_helper
+User=root
