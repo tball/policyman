@@ -16,3 +16,37 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  **/
+
+namespace PolicyMan.Controllers {
+	public class ActionController : IController, Object {
+		public AuthorizationTreeStore allow_any_authorization_tree_store { get; private set; default = new AuthorizationTreeStore(); }
+		public AuthorizationTreeStore allow_active_authorization_tree_store { get; private set; default = new AuthorizationTreeStore(); }
+		public AuthorizationTreeStore allow_inactive_authorization_tree_store { get; private set; default = new AuthorizationTreeStore(); }
+		
+		public string vendor { get; set; default = ""; }
+		public string vendor_url { get; set; default = ""; }
+		public string icon_name { get; set; default = ""; }
+		public string description { get; set; default = ""; }
+		public string message { get; set; default = ""; }
+		
+		public ActionController() {
+			init_bindings();
+		}
+		
+		private void init_bindings() {
+			
+		}
+		
+		public void set_action(PolicyMan.Common.Action action) {
+			vendor = action.vendor;
+			vendor_url = action.vendor_url;
+			icon_name = action.icon_name;
+			description = action.description;
+			message = action.message;
+			
+			allow_any_authorization_tree_store.set_authorization(action.authorizations.allow_any);
+			allow_active_authorization_tree_store.set_authorization(action.authorizations.allow_active);
+			allow_inactive_authorization_tree_store.set_authorization(action.authorizations.allow_inactive);
+		}
+	}
+}

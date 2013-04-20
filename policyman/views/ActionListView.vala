@@ -1,5 +1,5 @@
 /**
- * GPolkit is a gtk based polkit authorization manager.
+ * PolicyMan is a gtk based polkit authorization manager.
  * Copyright (C) 2012  Thomas Balling Sørensen
  *
  * This library is free software; you can redistribute it and/or
@@ -18,10 +18,10 @@
  **/
  
  using Gtk;
- using GPolkit.Models;
- using GPolkit.Common;
+ using PolicyMan.Controllers;
+ using PolicyMan.Common;
  
- namespace GPolkit.Views {
+ namespace PolicyMan.Views {
 	 public class ActionListView : ScrolledWindow, IBaseView {
 		 private TreeView tree_view;
 		 
@@ -32,17 +32,14 @@
 			 init();
 		 }
 		 
-		 public void connect_model(BaseModel base_model) {
-			ActionListModel action_list_model = (ActionListModel)base_model;
+		 public void connect_model(IController controller) {
+			ActionsTreeStore actions_tree_store = (ActionsTreeStore)controller;
 			
 			// Bind view to model
-			tree_view.set_model(action_list_model.get_filtered_tree_model());
-			
-			// Bind model events to view
-			action_list_model.notify["selected-explicit-action"].connect(selected_explicit_action_changed);
+			tree_view.set_model(actions_tree_store.get_filtered_tree_model());
 			
 			// Bind model to events from view
-			tree_view.get_selection().changed.connect(action_list_model.action_selection_changed);
+			//tree_view.get_selection().changed.connect(action_list_model.action_selection_changed);
 		}
 		
 		protected void init() {
@@ -63,46 +60,6 @@
 			tree_view.append_column(tree_view_column);
 			
 			this.add(tree_view);
-		}
-		
-		private void selected_explicit_action_changed(Object prop, ParamSpec spec) {
-			Value prop_value = Value(spec.value_type);
-			prop.get_property(spec.name, ref prop_value);
-
-			var explicit_action = prop_value.get_object() as GActionDescriptor;
-			var selection = tree_view.get_selection();
-			var tree_model = tree_view.get_model();
-
-			selection.unselect_all();
-			select_explicit_action_members(tree_model, selection, explicit_action, null);
-		}
-		
-		private void select_explicit_action_members(TreeModel tree_model, TreeSelection tree_selection, GActionDescriptor explicit_action, TreeIter? parent) {
-			TreeIter tree_iter;
-			if (!tree_model.iter_children(out tree_iter, parent)) {
-				return;
-			}
-			
-			do {
-				Value current_action_value;
-				tree_model.get_value(tree_iter, ActionListTreeStoreProxy.ColumnTypes.ACTION_REF, out current_action_value);
-				GActionDescriptor current_action = current_action_value.get_object() as GActionDescriptor;
-				
-				if (current_action == null) {
-					select_explicit_action_members(tree_model, tree_selection, explicit_action, tree_iter);
-					continue;
-				}
-				
-				var explicit_identities = explicit_action.get_identities();
-				foreach(var explicit_identity in explicit_identities) {
-					if (explicit_identity == current_action.identity) {
-						tree_selection.select_iter(tree_iter);
-						break;
-					}
-				}
-				
-				select_explicit_action_members(tree_model, tree_selection, explicit_action, tree_iter);
-			} while (tree_model.iter_next(ref tree_iter));
 		}
 	 }
  }

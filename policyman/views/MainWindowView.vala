@@ -1,5 +1,5 @@
 /**
- * GPolkit is a gtk based polkit authorization manager.
+ * PolicyMan is a gtk based polkit authorization manager.
  * Copyright (C) 2012  Thomas Balling Sørensen
  *
  * This library is free software; you can redistribute it and/or
@@ -18,9 +18,9 @@
  **/ 
 
 using Gtk;
-using GPolkit.Models;
+using PolicyMan.Controllers;
 
-namespace GPolkit.Views {
+namespace PolicyMan.Views {
 	public class MainWindowView : Window, IBaseView {
 		private Box horizontal_box;
 		private Box vertical_box;
@@ -30,7 +30,7 @@ namespace GPolkit.Views {
 		public TopToolbarView top_toolbar_view;
 		public MainWindowView() {
 			GLib.Object ( icon_name : "changes-prevent-symbolic",
-						  title : "GPolkit authorization manager",
+						  title : "PolicyMan Authorization Manager",
 						  window_position : WindowPosition.CENTER,
 						  width_request : 1024,
 						  height_request : 768);
@@ -51,16 +51,16 @@ namespace GPolkit.Views {
 			this.add(vertical_box);
 		}
 		
-		public void connect_model(BaseModel base_model) {
-			MainWindowModel main_window_model = (MainWindowModel)base_model;
+		public void connect_model(IController controller) {
+			ActionManagerController action_manager_controller = (ActionManagerController)controller;
 			
 			// Connect childs views
-			action_list_view.connect_model(main_window_model.action_list_model);
-			action_properties_view.connect_model(main_window_model.action_properties_model);
-			top_toolbar_view.connect_model(main_window_model.top_toolbar_model);
+			action_list_view.connect_model(action_manager_controller.actions_tree_store);
+			action_properties_view.connect_model(action_manager_controller.selected_action_controller);
+			top_toolbar_view.connect_model(action_manager_controller);
 			
 			// Connect signals
-			this.destroy.connect(main_window_model.close);
+			this.destroy.connect(action_manager_controller.close);
 		}
 	}
 }

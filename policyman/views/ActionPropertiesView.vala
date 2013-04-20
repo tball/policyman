@@ -1,5 +1,5 @@
 /**
- * GPolkit is a gtk based polkit authorization manager.
+ * PolicyMan is a gtk based polkit authorization manager.
  * Copyright (C) 2012  Thomas Balling Sørensen
  *
  * This library is free software; you can redistribute it and/or
@@ -18,9 +18,9 @@
  **/ 
 
 using Gtk;
-using GPolkit.Models;
+using PolicyMan.Controllers;
 
-namespace GPolkit.Views {
+namespace PolicyMan.Views {
 	public class ActionPropertiesView : Box, IBaseView {
 		private Label action_vendor;
 		private Label action_description;
@@ -28,8 +28,8 @@ namespace GPolkit.Views {
 		
 		public string action_vendor_string {get; set; default = "";}
 		public string action_vendor_url_string {get; set; default = "";}
-		public ImplicitEditorView implicit_editor_view;
-		public ExplicitOverviewView explicit_overview_view;
+		//public ImplicitEditorView implicit_editor_view;
+		//public ExplicitOverviewView explicit_overview_view;
 		public ActionPropertiesView() {
 			GLib.Object (orientation: Gtk.Orientation.VERTICAL,
 						 spacing: 4,
@@ -39,9 +39,9 @@ namespace GPolkit.Views {
 			Init();
 		}
 		
-		public void connect_model(BaseModel base_model) {
+		public void connect_model(IController controller) {
 			// Internal bindings
-			this.notify["action-vendor-string"].connect(vendor_markup_changed);
+			/*this.notify["action-vendor-string"].connect(vendor_markup_changed);
 			this.notify["action-vendor-url-string"].connect(vendor_markup_changed);
 			
 			// Bind to the model properties
@@ -54,7 +54,7 @@ namespace GPolkit.Views {
 			// Bind child views
 			ActionPropertiesModel action_properties_model = base_model as ActionPropertiesModel;
 			implicit_editor_view.connect_model(action_properties_model.implicit_editor_model);
-			explicit_overview_view.connect_model(action_properties_model.explicit_overview_model);
+			explicit_overview_view.connect_model(action_properties_model.explicit_overview_model);*/
 		}
 		
 		protected void Init() {
@@ -67,8 +67,8 @@ namespace GPolkit.Views {
 			action_description.halign = Align.START;
 			action_vendor = new Label("");
 			action_vendor.halign = Align.START;
-			implicit_editor_view = new ImplicitEditorView();
-			explicit_overview_view = new ExplicitOverviewView();
+			//implicit_editor_view = new ImplicitEditorView();
+			//explicit_overview_view = new ExplicitOverviewView();
 			
 			var horizontal_box = new Box(Orientation.HORIZONTAL, 4);
 			var vertical_box = new Box(Orientation.VERTICAL, 4);
@@ -86,9 +86,9 @@ namespace GPolkit.Views {
 			
 			this.pack_start(horizontal_box, false);
 			this.pack_start(implicit_label, false);
-			this.pack_start(implicit_editor_view, false);
+			//this.pack_start(implicit_editor_view, false);
 			this.pack_start(explicit_label, false);
-			this.pack_start(explicit_overview_view, false);
+			//this.pack_start(explicit_overview_view, false);
 		}
 		
 		public void vendor_markup_changed(Object sender, ParamSpec spec) {

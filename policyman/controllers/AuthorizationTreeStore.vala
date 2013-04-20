@@ -16,3 +16,24 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  **/
+
+using Gtk;
+using PolicyMan.Common;
+
+namespace PolicyMan.Controllers {
+	public class AuthorizationTreeStore {
+		public signal void authorization_selected(Authorization authorization);
+		
+		public AuthorizationTreeStore() {
+			
+		}
+		
+		public void set_authorization(Authorization authorization) {
+			
+		}
+		
+		public void select_authorization(TreeIter authorization_tree_iter) {
+			
+		}
+	}
+}

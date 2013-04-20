@@ -1,7 +1,7 @@
-using GPolkit.Models;
+using PolicyMan.Controllers;
 
-namespace GPolkit.Views {
+namespace PolicyMan.Views {
 	public interface IBaseView : GLib.Object {
-		public abstract void connect_model(BaseModel baseModel);
+		public abstract void connect_model(IController controller);
 	} 
 }

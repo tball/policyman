@@ -26,13 +26,11 @@ namespace PolicyMan {
 	[DBus (name = "org.gnome.policyman.helper")]
 	public class PolicyManHelper : Object {
 		public Variant[] get_actions(BusName bus_name) throws GLib.Error {
-			stdout.printf("Fetching actions\n");
 			// Check permissions
 			string error_str;
 			if (!grant_permission(bus_name, "org.gnome.policyman.GetActions", out error_str)) {
 				throw new PolicyManHelperError.SOME_ERROR("Cannot get actions due to the following error: " + error_str);
 			}
-			stdout.printf("Permission granted\n");
 			
 			// Fetch actions
 			var authority = Polkit.Authority.get_sync();
@@ -43,8 +41,7 @@ namespace PolicyMan {
 			catch(GLib.Error err) {
 				throw new PolicyManHelperError.SOME_ERROR("Could not enumerate actions.");
 			}
-			stdout.printf("Fetched %d actions\n", (int)action_descriptors.length());
-			
+
 			// Convert action to our own format
 			Gee.List<Variant> action_variants = new ArrayList<Variant>();
 			var i = 0;
@@ -59,7 +56,6 @@ namespace PolicyMan {
 				action_variants.add(action_variant);
 				i++;
 			}
-			stdout.printf("Converted %d actions\n", i);
 			
 			return action_variants.to_array();
 		}

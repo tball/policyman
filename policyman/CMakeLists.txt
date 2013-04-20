@@ -11,6 +11,8 @@ vala_precompile(VALA_C
 SOURCES
 main.vala
 Program.vala
+# Controllers
+controllers/IController.vala
 controllers/AccountsTreeStore.vala
 controllers/ActionController.vala
 controllers/ActionManagerController.vala
@@ -19,6 +21,14 @@ controllers/ActionsTreeStore.vala
 controllers/AuthoritiesTreeStore.vala
 controllers/AuthorityController.vala
 controllers/AuthorizationTreeStore.vala
+
+# Views
+views/IBaseView.vala
+views/MainWindowView.vala
+views/TopToolbarView.vala
+views/ActionListView.vala
+views/ActionPropertiesView.vala
+
 
 PACKAGES
 gtk+-3.0

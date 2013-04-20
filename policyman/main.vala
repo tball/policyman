@@ -22,21 +22,10 @@ using PolicyMan.Common;
 
 namespace PolicyMan {
 	static int main (string[] args) {
-		//Program program = new Program();
-		//program.setup_ui(args);
-		//program.run();
+		Program program = new Program();
+		program.setup_ui(args);
+		program.run();
 		
-		stdout.printf("Loading action manager\n");
-		var action_manager = new ActionManager();
-		Gee.List<PolicyMan.Common.Action> actions;
-		if (action_manager.load(out actions)) {
-			stdout.printf("Number of actions %d\n", actions.size);
-		}
-	
-		foreach (var action in actions) {
-			stdout.printf("Action vendor: %s\n", action.vendor);
-		}
-
 		return 0;
 	}
 }

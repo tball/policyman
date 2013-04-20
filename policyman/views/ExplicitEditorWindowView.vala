@@ -1,5 +1,5 @@
 /**
- * GPolkit is a gtk based polkit authorization manager.
+ * PolicyMan is a gtk based polkit authorization manager.
  * Copyright (C) 2012  Thomas Balling Sørensen
  *
  * This library is free software; you can redistribute it and/or
@@ -19,10 +19,10 @@
  
 using Gtk;
 using Gee;
-using GPolkit.Models;
-using GPolkit.Utilities;
+using PolicyMan.Models;
+using PolicyMan.Utilities;
  
-namespace GPolkit.Views {
+namespace PolicyMan.Views {
 	public class ExplicitEditorWindowView : Window, IBaseView {
 		private ImplicitEditorView implicit_editor_view;
 		private Button save_changes_button;

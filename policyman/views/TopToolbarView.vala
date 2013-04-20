@@ -1,5 +1,5 @@
 /**
- * GPolkit is a gtk based polkit authorization manager.
+ * PolicyMan is a gtk based polkit authorization manager.
  * Copyright (C) 2012  Thomas Balling Sørensen
  *
  * This library is free software; you can redistribute it and/or
@@ -18,9 +18,9 @@
  **/ 
  
 using Gtk;
-using GPolkit.Models;
+using PolicyMan.Controllers;
  
-namespace GPolkit.Views {
+namespace PolicyMan.Views {
 	public class TopToolbarView : Toolbar, IBaseView {
 		private Entry search_entry;
 		private ToolButton save_tool_button;
@@ -63,12 +63,12 @@ namespace GPolkit.Views {
 			//this.insert(tool_item, 0);
 		}
 		
-		public void connect_model(BaseModel base_model) {
-			TopToolbarModel top_toolbar_model = (TopToolbarModel)base_model;
+		public void connect_model(IController controller) {
+			ActionManagerController action_manager_controller = (ActionManagerController)controller;
 			
 			// Bind to the model properties
-			search_string_changed.connect(top_toolbar_model.search_string_changed);
-			save_change_button_clicked.connect(top_toolbar_model.save_changes);
+			search_string_changed.connect(action_manager_controller.actions_tree_store.search_string_changed);
+			save_change_button_clicked.connect(action_manager_controller.save_changes);
 		}
 	}
 }
