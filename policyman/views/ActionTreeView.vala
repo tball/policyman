@@ -22,10 +22,10 @@
  using PolicyMan.Common;
  
  namespace PolicyMan.Views {
-	 public class ActionListView : ScrolledWindow, IBaseView {
+	 public class ActionTreeView : ScrolledWindow, IBaseView {
 		 private TreeView tree_view;
 		 
-		 public ActionListView() {
+		 public ActionTreeView() {
 			 GLib.Object (width_request : 80,
 						  shadow_type : ShadowType.IN,
 						  margin : 10);
@@ -36,10 +36,16 @@
 			ActionsTreeStore actions_tree_store = (ActionsTreeStore)controller;
 			
 			// Bind view to model
-			tree_view.set_model(actions_tree_store.get_filtered_tree_model());
+			tree_view.set_model(actions_tree_store.tree_store_filter);
 			
 			// Bind model to events from view
-			//tree_view.get_selection().changed.connect(action_list_model.action_selection_changed);
+			tree_view.get_selection().changed.connect((sender) => {
+				TreeModel tree_model;
+				TreeIter tree_iter; 
+				if (tree_view.get_selection().get_selected(out tree_model, out tree_iter)) {
+					actions_tree_store.select_action_tree_iter(tree_iter);
+				}
+			});
 		}
 		
 		protected void init() {
@@ -55,7 +61,7 @@
 			tree_view_column.set_attributes(text_cell_rendere, "text", 1, null);
 			tree_view_column.title = "Actions";
 			tree_view = new TreeView();
-			tree_view.get_selection().mode = SelectionMode.MULTIPLE;
+			tree_view.get_selection().mode = SelectionMode.SINGLE;
 			tree_view.expand = true;
 			tree_view.append_column(tree_view_column);
 			

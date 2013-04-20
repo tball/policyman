@@ -20,14 +20,17 @@ controllers/ActionMembersTreeStore.vala
 controllers/ActionsTreeStore.vala
 controllers/AuthoritiesTreeStore.vala
 controllers/AuthorityController.vala
+controllers/AuthorizationsController.vala
 controllers/AuthorizationTreeStore.vala
 
 # Views
 views/IBaseView.vala
 views/MainWindowView.vala
 views/TopToolbarView.vala
-views/ActionListView.vala
-views/ActionPropertiesView.vala
+views/ActionTreeView.vala
+views/ActionView.vala
+views/AuthorizationsView.vala
+views/AuthoritiesTreeView.vala
 
 
 PACKAGES

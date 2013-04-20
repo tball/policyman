@@ -18,36 +18,10 @@
  **/
 
 namespace PolicyMan.Common {
-	const string authorization_strings[] = { "Not Authorized", "Authentication Required", "Administrator Authentication Required",
-										   "Authentication Required Retained", "Administrator Authentication Required Retained", "Authorized"};
-	
-	public enum Authorization {
-		NOT_AUTHORIZED,
-		AUTHENTICATION_REQUIRED,
-		ADMINISTRATOR_AUTHENTICATION_REQUIRED,
-		AUTHENTICATION_REQUIRED_RETAINED,
-		ADMINISTRATOR_AUTHENTICATION_REQUIRED_RETAINED,
-		AUTHORIZED
-	}
-	
 	public class Authorizations : ISerializable, Object {
 		public Authorization allow_any { get; set; default = Authorization.NOT_AUTHORIZED; }
 		public Authorization allow_active { get; set; default = Authorization.NOT_AUTHORIZED; }
 		public Authorization allow_inactive { get; set; default = Authorization.NOT_AUTHORIZED; }
-		
-		public static string authorization_to_string(Authorization authorization) {
-			return authorization_strings[authorization];
-		}
-		
-		public static Authorization string_to_authorization(string str) {
-			for (var i = 0; i < authorization_strings.length; i++) {
-				var authorization_string = authorization_strings[i];
-				if (str == authorization_string) {
-					return (Authorization)i;
-				}
-			}
-			return Authorization.NOT_AUTHORIZED;
-		}
 		
 		public Variant to_variant() {
 			var variant_arr = new Variant[]

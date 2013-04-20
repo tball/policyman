@@ -21,16 +21,16 @@ using Gtk;
 using PolicyMan.Controllers;
 
 namespace PolicyMan.Views {
-	public class ActionPropertiesView : Box, IBaseView {
+	public class ActionView : Box, IBaseView {
 		private Label action_vendor;
 		private Label action_description;
 		private Image action_icon;
 		
 		public string action_vendor_string {get; set; default = "";}
 		public string action_vendor_url_string {get; set; default = "";}
-		//public ImplicitEditorView implicit_editor_view;
-		//public ExplicitOverviewView explicit_overview_view;
-		public ActionPropertiesView() {
+		public AuthorizationsView authorizations_view;
+		public AuthoritiesTreeView authorities_tree_view;
+		public ActionView() {
 			GLib.Object (orientation: Gtk.Orientation.VERTICAL,
 						 spacing: 4,
 						 expand : false,
@@ -40,21 +40,29 @@ namespace PolicyMan.Views {
 		}
 		
 		public void connect_model(IController controller) {
+			ActionController action_controller = controller as ActionController;
+			if (action_controller == null) {
+				return;
+			}
+			
 			// Internal bindings
-			/*this.notify["action-vendor-string"].connect(vendor_markup_changed);
+			this.notify["action-vendor-string"].connect(vendor_markup_changed);
 			this.notify["action-vendor-url-string"].connect(vendor_markup_changed);
 			
 			// Bind to the model properties
-			base_model.bind_property("action-vendor", this, "action-vendor-string");
-			base_model.bind_property("action-vendor-url", this, "action-vendor-url-string");
-			base_model.bind_property("action-description", action_description, "label");
-			base_model.bind_property("action-icon", action_icon, "icon-name");
-			base_model.bind_property("action-is-valid", this, "sensitive");
+			action_controller.bind_property("vendor", this, "action-vendor-string");
+			action_controller.bind_property("vendor-url", this, "action-vendor-url-string");
+			action_controller.bind_property("description", action_description, "label");
+			action_controller.bind_property("icon-name", action_icon, "icon-name");
+			action_controller.bind_property("action-selected", this, "sensitive");
 			
 			// Bind child views
-			ActionPropertiesModel action_properties_model = base_model as ActionPropertiesModel;
-			implicit_editor_view.connect_model(action_properties_model.implicit_editor_model);
-			explicit_overview_view.connect_model(action_properties_model.explicit_overview_model);*/
+			//ActionPropertiesModel action_properties_model = base_model as ActionPropertiesModel;
+			//implicit_editor_view.connect_model(action_properties_model.implicit_editor_model);
+			//explicit_overview_view.connect_model(action_properties_model.explicit_overview_model);
+			
+			authorizations_view.connect_model(action_controller.authorizations_controller);
+			authorities_tree_view.connect_model(action_controller.authorities_tree_store);
 		}
 		
 		protected void Init() {
@@ -67,8 +75,8 @@ namespace PolicyMan.Views {
 			action_description.halign = Align.START;
 			action_vendor = new Label("");
 			action_vendor.halign = Align.START;
-			//implicit_editor_view = new ImplicitEditorView();
-			//explicit_overview_view = new ExplicitOverviewView();
+			authorizations_view = new AuthorizationsView();
+			authorities_tree_view = new AuthoritiesTreeView();
 			
 			var horizontal_box = new Box(Orientation.HORIZONTAL, 4);
 			var vertical_box = new Box(Orientation.VERTICAL, 4);
@@ -79,16 +87,16 @@ namespace PolicyMan.Views {
 			
 			var implicit_label = new Label(null);
 			implicit_label.halign = Align.START;
-			implicit_label.set_markup("<b>Implicit action</b>");
+			implicit_label.set_markup("<b>Authorizations</b>");
 			var explicit_label = new Label(null);
 			explicit_label.halign = Align.START;
-			explicit_label.set_markup("<b>Explicit action</b>");
+			explicit_label.set_markup("<b>Authorities</b>");
 			
 			this.pack_start(horizontal_box, false);
 			this.pack_start(implicit_label, false);
-			//this.pack_start(implicit_editor_view, false);
+			this.pack_start(authorizations_view, false);
 			this.pack_start(explicit_label, false);
-			//this.pack_start(explicit_overview_view, false);
+			this.pack_start(authorities_tree_view, false);
 		}
 		
 		public void vendor_markup_changed(Object sender, ParamSpec spec) {

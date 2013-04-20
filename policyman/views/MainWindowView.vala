@@ -25,8 +25,8 @@ namespace PolicyMan.Views {
 		private Box horizontal_box;
 		private Box vertical_box;
 		
-		public ActionListView action_list_view;
-		public ActionPropertiesView action_properties_view;
+		public ActionTreeView action_tree_view;
+		public ActionView action_view;
 		public TopToolbarView top_toolbar_view;
 		public MainWindowView() {
 			GLib.Object ( icon_name : "changes-prevent-symbolic",
@@ -40,12 +40,12 @@ namespace PolicyMan.Views {
 		protected void init() {
 			horizontal_box = new Box(Orientation.HORIZONTAL, 4);
 			vertical_box = new Box(Orientation.VERTICAL, 4);
-			action_list_view = new ActionListView();
-			action_properties_view = new ActionPropertiesView();
+			action_tree_view = new ActionTreeView();
+			action_view = new ActionView();
 			top_toolbar_view = new TopToolbarView();
 			
-			horizontal_box.pack_start(action_list_view);
-			horizontal_box.pack_start(action_properties_view);
+			horizontal_box.pack_start(action_tree_view);
+			horizontal_box.pack_start(action_view);
 			vertical_box.pack_start(top_toolbar_view, false);
 			vertical_box.pack_start(horizontal_box);
 			this.add(vertical_box);
@@ -55,8 +55,8 @@ namespace PolicyMan.Views {
 			ActionManagerController action_manager_controller = (ActionManagerController)controller;
 			
 			// Connect childs views
-			action_list_view.connect_model(action_manager_controller.actions_tree_store);
-			action_properties_view.connect_model(action_manager_controller.selected_action_controller);
+			action_tree_view.connect_model(action_manager_controller.actions_tree_store);
+			action_view.connect_model(action_manager_controller.selected_action_controller);
 			top_toolbar_view.connect_model(action_manager_controller);
 			
 			// Connect signals

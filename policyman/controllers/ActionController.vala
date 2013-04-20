@@ -17,17 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  **/
 
+using PolicyMan.Common;
+
 namespace PolicyMan.Controllers {
 	public class ActionController : IController, Object {
-		public AuthorizationTreeStore allow_any_authorization_tree_store { get; private set; default = new AuthorizationTreeStore(); }
-		public AuthorizationTreeStore allow_active_authorization_tree_store { get; private set; default = new AuthorizationTreeStore(); }
-		public AuthorizationTreeStore allow_inactive_authorization_tree_store { get; private set; default = new AuthorizationTreeStore(); }
+		private PolicyMan.Common.Action action = null;
 		
+		public AuthorizationsController authorizations_controller { get; private set; default = new AuthorizationsController(); }
+		public AuthoritiesTreeStore authorities_tree_store { get; private set; default = new AuthoritiesTreeStore(); }
 		public string vendor { get; set; default = ""; }
 		public string vendor_url { get; set; default = ""; }
 		public string icon_name { get; set; default = ""; }
 		public string description { get; set; default = ""; }
 		public string message { get; set; default = ""; }
+		public bool action_selected { get; set; default = false; }
 		
 		public ActionController() {
 			init_bindings();
@@ -37,16 +40,22 @@ namespace PolicyMan.Controllers {
 			
 		}
 		
-		public void set_action(PolicyMan.Common.Action action) {
-			vendor = action.vendor;
-			vendor_url = action.vendor_url;
-			icon_name = action.icon_name;
-			description = action.description;
-			message = action.message;
+		public void set_action(PolicyMan.Common.Action ?action) {
+			this.action = action;
+			if (action == null) {
+				action_selected = false;
+				return;
+			}
 			
-			allow_any_authorization_tree_store.set_authorization(action.authorizations.allow_any);
-			allow_active_authorization_tree_store.set_authorization(action.authorizations.allow_active);
-			allow_inactive_authorization_tree_store.set_authorization(action.authorizations.allow_inactive);
+			vendor = action != null ? action.vendor : "";
+			vendor_url = action != null ? action.vendor_url : "";
+			icon_name = action != null ? action.icon_name : "";
+			description = action != null ? action.description : "";
+			message = action != null ? action.message : "";
+			
+			authorizations_controller.set_authorizations(action != null ? action.authorizations : new Authorizations());
+			authorities_tree_store.set_authorities(action.authorities);
+			action_selected = true;
 		}
 	}
 }

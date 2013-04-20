@@ -16,3 +16,34 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  **/
+
+using Gtk;
+using PolicyMan.Common;
+
+namespace PolicyMan.Controllers {
+	public class AuthoritiesTreeStore : TreeStore, IController {
+		public enum ColumnTypes {
+			TITLE = 0,
+			OBJECT
+		}
+		
+		public AuthoritiesTreeStore() {
+			set_column_types(new Type[] {typeof(string), typeof(Authority)});
+		}
+
+		public void set_authorities(Gee.List<Authority> ?authorities) {
+			clear();
+			
+			if (authorities == null) {
+				return;
+			}
+
+			// Parse policies			
+			foreach (var authority in authorities) {
+				TreeIter root;
+				append(out root, null);
+				set(root, ColumnTypes.TITLE, "<b>" + authority.title + "</b>, " + "(Allow any: " + authority.authorizations.allow_any.to_string() + ", Allow active: " + authority.authorizations.allow_active.to_string() + ", Allow inactive: " + authority.authorizations.allow_inactive.to_string() + ")", ColumnTypes.OBJECT, authority, -1);
+			}
+		}
+	}
+}

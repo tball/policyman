@@ -17,6 +17,7 @@ Account.vala
 AccountType.vala
 Authority.vala
 Authorizations.vala
+Authorization.vala
 ISerializable.vala
 ActionHelperInterface.vala
 

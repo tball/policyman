@@ -34,11 +34,11 @@ namespace PolicyMan.Controllers {
 		}
 		
 		private void init() {
-			stdout.printf("Loading action manager\n");
 			var action_manager = new ActionManager();
 			Gee.List<PolicyMan.Common.Action> actions;
-			if (action_manager.load(out actions)) {
-				stdout.printf("Number of actions %d\n", actions.size);
+			if (!action_manager.load(out actions)) {
+				close();
+				return;
 			}
 			
 			actions_tree_store.update_actions(actions);

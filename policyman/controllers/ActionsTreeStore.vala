@@ -34,19 +34,15 @@
 			ACTION_REF,
 		}
 		
-		public TreeModelFilter TreeStoreFilter { get; private set; }
+		public TreeModelFilter tree_store_filter { get; private set; }
 	
 		public ActionsTreeStore() {
-			TreeStoreFilter = new TreeModelFilter(this, null);
-			TreeStoreFilter.set_visible_func(visibility_func);
+			tree_store_filter = new TreeModelFilter(this, null);
+			tree_store_filter.set_visible_func(visibility_func);
 			set_column_types(new Type[] {typeof(string), typeof (string), typeof (string), typeof(PolicyMan.Common.Action)});
 			
 			// Create bindings
-			this.notify["search-string"].connect((sender) => {TreeStoreFilter.refilter();});
-		}
-
-		public TreeModel get_filtered_tree_model() {
-			return TreeStoreFilter;
+			this.notify["search-string"].connect((sender) => { tree_store_filter.refilter();});
 		}
 
 		private bool visibility_func(TreeModel model, TreeIter iter) {
@@ -204,10 +200,10 @@
 			this.search_string = search_string;
 		}
 		
-		public void select_action(TreeIter tree_iter) {
+		public void select_action_tree_iter(TreeIter tree_iter) {
 			// Get the selected action
 			Value action_value;
-			get_value(tree_iter, ActionsTreeStore.ColumnTypes.ACTION_REF, out action_value);
+			tree_store_filter.get_value(tree_iter, ActionsTreeStore.ColumnTypes.ACTION_REF, out action_value);
 			var selected_action = action_value.get_object() as PolicyMan.Common.Action;
 
 			action_selected(selected_action);

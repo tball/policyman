@@ -30,17 +30,14 @@ namespace PolicyMan {
 				actions = null;
 				return false;
 			}
-			stdout.printf("Loading actions\n");
-			
+
 			Variant[] action_variants = null;
 			try {
 				action_variants = policy_man_helper.get_actions();
 			} catch (IOError e) {
-				stdout.printf("Get actions failed\n");
 				actions = null;
 				return false;
 			}
-			stdout.printf("Got actions\n");
 			
 			if (action_variants == null) {
 				actions = null;
@@ -68,7 +65,6 @@ namespace PolicyMan {
 		
 		private bool init_policyman_helper() {
 			if (policy_man_helper == null) {
-				stdout.printf("Initializing PolicyManHelper\n");
 				// Init authorization helper
 				try {
 					policy_man_helper = Bus.get_proxy_sync (BusType.SYSTEM, "org.gnome.policyman.helper",
@@ -78,7 +74,6 @@ namespace PolicyMan {
 					stdout.printf("PolicyManHelper init failed\n");
 					return false;
 				}
-				stdout.printf("Initialized PolicyManHelper\n");
 			}
 			return true;
 		}
