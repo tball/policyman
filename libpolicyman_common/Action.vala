@@ -53,11 +53,11 @@ namespace PolicyMan.Common {
 		}
 		
 		public Variant to_variant() {
-			Gee.List<Variant> authority_variants = new ArrayList<Variant>();
-			foreach (var authority in authorities) {
-				authority_variants.add(authority.to_variant());
+			var authority_variants = new Variant[authorities.size];
+			for (var i = 0; i < authorities.size; i++) {
+				var authority = authorities[i];
+				authority_variants[i] = authority.to_variant();
 			}
-			var authority_variant_arr = authority_variants.to_array();
 			
 			var variant_arr = new Variant[] {
 				new Variant.string(vendor),
@@ -67,7 +67,7 @@ namespace PolicyMan.Common {
 				new Variant.string(description),
 				new Variant.string(message),
 				authorizations.to_variant(),
-				authority_variant_arr.length == 0 ? new Variant.boolean(false) : new Variant.tuple(authority_variant_arr)
+				authority_variants.length == 0 ? new Variant.boolean(false) : new Variant.tuple(authority_variants)
 			};
 			
 			return new Variant.tuple(variant_arr);

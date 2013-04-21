@@ -25,14 +25,15 @@ namespace PolicyMan.Common {
 		public abstract void from_variant(Variant variant);
 		
 		public static Variant[] to_variant_array<T>(Gee.List<T> objects) {
-			Gee.List<Variant> object_variants = new ArrayList<Variant>();
-			foreach(var object in objects) {
+			var object_variants = new Variant[objects.size];
+			for (var i = 0; i < objects.size; i++) {
+				var object = objects[i];
 				if (!(object is ISerializable))
 					continue;
 				
-				object_variants.add((object as ISerializable).to_variant());
+				object_variants[i] = (object as ISerializable).to_variant();
 			}
-			return object_variants.to_array();
+			return object_variants;
 		}
 		
 		public static Gee.List<T> to_object_list<T>(Variant[] object_variants) {

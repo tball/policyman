@@ -11,6 +11,7 @@ pkg_check_modules(GIO REQUIRED gio-2.0)
 vala_precompile(VALA_C
 SOURCES
 ActionManager.vala
+AccountUtilities.vala
 
 PACKAGES
 gio-2.0

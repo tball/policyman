@@ -29,22 +29,12 @@ namespace PolicyMan.Common {
 		public string accounts_string { get; set; default = ""; }
 		public Gee.List<Account> accounts { get; set; default = new ArrayList<Account>(); }
 		
-		public Variant to_variant() {
-			Gee.List<Variant> action_variants = new ArrayList<Variant>();
-			foreach(var action in actions) {
-				action_variants.add(action.to_variant());
-			}
-			Gee.List<Variant> account_variants = new ArrayList<Variant>();
-			foreach(var account in accounts) {
-				account_variants.add(account.to_variant());
-			}
-			
+		public Variant to_variant() {		
 			var variant_arr = new Variant[] {
 				new Variant.string(title),
 				new Variant.string(file_path),
-				authorizations.to_variant()//,
-				//new Variant.tuple(action_variants.to_array()),
-				//new Variant.tuple(account_variants.to_array())
+				authorizations.to_variant(),
+				new Variant.string(accounts_string),
 			};
 			return new Variant.tuple(variant_arr);
 		}
@@ -53,20 +43,7 @@ namespace PolicyMan.Common {
 			title = variant.get_child_value(0).get_string();
 			file_path = variant.get_child_value(1).get_string();
 			authorizations.from_variant(variant.get_child_value(2));
-			
-			/*var action_variant_arr = variant.get_child_value(3);
-			foreach(var action_variant in action_variant_arr) {
-				var new_action = new Action();
-				new_action.from_variant(action_variant);
-				actions.add(new_action);
-			}
-			
-			var account_variant_arr = variant.get_child_value(4);
-			foreach(var account_variant in account_variant_arr) {
-				var new_account = new Account();
-				new_account.from_variant(account_variant);
-				accounts.add(new_account);
-			}*/
+			accounts_string = variant.get_child_value(3).get_string();
 		}
 	}
 }

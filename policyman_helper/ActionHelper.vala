@@ -51,9 +51,9 @@ namespace PolicyMan {
 			var authorities = get_authorities();
 
 			// Convert action to our own format
-			Gee.List<Variant> action_variants = new ArrayList<Variant>();
-			var i = 0;
-			foreach (Polkit.ActionDescription action_desc in action_descriptors) {
+			var action_variants = new Variant[action_descriptors.length()];
+			for (var i = 0; i < action_descriptors.length(); i++) {
+				var action_desc = action_descriptors.nth_data(i);
 				if (action_desc == null) {
 					continue;
 				}
@@ -67,11 +67,10 @@ namespace PolicyMan {
 				}
 				
 				var action_variant = action.to_variant();
-				action_variants.add(action_variant);
-				i++;
+				action_variants[i] = action_variant;
 			}
 			
-			return action_variants.to_array();
+			return action_variants;
 		}
 		
 		private Gee.List<PolicyMan.Common.Authority> get_authorities() {
