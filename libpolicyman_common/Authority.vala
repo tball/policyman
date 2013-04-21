@@ -24,7 +24,9 @@ namespace PolicyMan.Common {
 		public string title { get; set; default = ""; }
 		public string file_path { get; set; default = ""; }
 		public Authorizations authorizations { get; set; default = new Authorizations(); }
+		public string actions_string { get; set; default = ""; }
 		public Gee.List<Action> actions { get; set; default = new ArrayList<Action>(); }
+		public string accounts_string { get; set; default = ""; }
 		public Gee.List<Account> accounts { get; set; default = new ArrayList<Account>(); }
 		
 		public Variant to_variant() {
@@ -40,9 +42,9 @@ namespace PolicyMan.Common {
 			var variant_arr = new Variant[] {
 				new Variant.string(title),
 				new Variant.string(file_path),
-				authorizations.to_variant(),
-				action_variants.to_array(),
-				account_variants.to_array()
+				authorizations.to_variant()//,
+				//new Variant.tuple(action_variants.to_array()),
+				//new Variant.tuple(account_variants.to_array())
 			};
 			return new Variant.tuple(variant_arr);
 		}
@@ -50,9 +52,9 @@ namespace PolicyMan.Common {
 		public void from_variant(Variant variant) {
 			title = variant.get_child_value(0).get_string();
 			file_path = variant.get_child_value(1).get_string();
-			authorizations = (Authorizations)variant.get_child_value(2).get_uint16();
+			authorizations.from_variant(variant.get_child_value(2));
 			
-			var action_variant_arr = variant.get_child_value(3);
+			/*var action_variant_arr = variant.get_child_value(3);
 			foreach(var action_variant in action_variant_arr) {
 				var new_action = new Action();
 				new_action.from_variant(action_variant);
@@ -64,7 +66,7 @@ namespace PolicyMan.Common {
 				var new_account = new Account();
 				new_account.from_variant(account_variant);
 				accounts.add(new_account);
-			}
+			}*/
 		}
 	}
 }

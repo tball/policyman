@@ -57,9 +57,7 @@ namespace PolicyMan.Common {
 			foreach (var authority in authorities) {
 				authority_variants.add(authority.to_variant());
 			}
-			
 			var authority_variant_arr = authority_variants.to_array();
-			stdout.printf("Array of authorities: %d\n", authority_variant_arr.length);
 			
 			var variant_arr = new Variant[] {
 				new Variant.string(vendor),

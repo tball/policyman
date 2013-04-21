@@ -49,7 +49,7 @@ namespace PolicyMan.Controllers {
 		}
 		
 		public void save_changes() {
-			stdout.printf("Saving changes");
+			stdout.printf("Saving changes\n");
 		}
 		
 		public void close() {

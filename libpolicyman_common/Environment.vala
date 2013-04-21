@@ -21,7 +21,7 @@ namespace PolicyMan.Common {
 	public class Ressources {
 		public static const string DATA_DIR = """/usr/share/policyman""";
 		public static const string ACTION_DIR = """/usr/share/polkit-1/actions""";
-		public static const string EXPLICIT_VAR_DIR = """/var/lib/polkit-1/localauthority""";
-		public static const string EXPLICIT_ETC_DIR = """/etc/polkit-1/localauthority""";
+		public static const string AUTHORITY_VAR_DIR = """/var/lib/polkit-1/localauthority""";
+		public static const string AUTHORITY_ETC_DIR = """/etc/polkit-1/localauthority""";
 	}
 }

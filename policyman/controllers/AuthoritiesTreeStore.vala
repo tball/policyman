@@ -35,11 +35,13 @@ namespace PolicyMan.Controllers {
 			clear();
 			
 			if (authorities == null) {
+				stdout.printf("Authorities null");
 				return;
 			}
 
 			// Parse policies			
 			foreach (var authority in authorities) {
+				stdout.printf("Parsed authority: %s\n", authority.title);
 				TreeIter root;
 				append(out root, null);
 				set(root, ColumnTypes.TITLE, "<b>" + authority.title + "</b>, " + "(Allow any: " + authority.authorizations.allow_any.to_string() + ", Allow active: " + authority.authorizations.allow_active.to_string() + ", Allow inactive: " + authority.authorizations.allow_inactive.to_string() + ")", ColumnTypes.OBJECT, authority, -1);
