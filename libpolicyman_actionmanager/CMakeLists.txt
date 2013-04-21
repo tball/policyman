@@ -5,6 +5,7 @@ pkg_check_modules(DBUS-GLIB REQUIRED dbus-glib-1)
 pkg_check_modules(DBUS REQUIRED dbus-1)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
 pkg_check_modules(GIO REQUIRED gio-2.0)
+pkg_check_modules(LIBOOBS REQUIRED liboobs-1)
 
 
 # Compile VALA files

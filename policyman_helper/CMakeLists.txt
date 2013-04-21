@@ -1,7 +1,12 @@
 find_package(PkgConfig)
 pkg_check_modules(GIO REQUIRED gio-2.0)
 pkg_check_modules(XML REQUIRED libxml-2.0)
-pkg_check_modules(POLBACK REQUIRED polkit-backend-1)
+pkg_check_modules(POLBACK polkit-backend-1)
+
+if (NOT POLBACK_FOUND)
+  pkg_check_modules(POLBACK REQUIRED polkit-gobject-1)
+endif()
+
 
 vala_precompile(VALA_C
 
