@@ -19,6 +19,7 @@
 
 using Gtk;
 using PolicyMan.Common;
+using PolicyMan.Views;
 
 namespace PolicyMan.Controllers {
 	public class AuthoritiesTreeStore : TreeStore, IController {
@@ -27,10 +28,35 @@ namespace PolicyMan.Controllers {
 			OBJECT
 		}
 		
+		public AuthorityController selected_authority_controller { get; private set; default = new AuthorityController(); }
+		
 		public AuthoritiesTreeStore() {
 			set_column_types(new Type[] {typeof(string), typeof(Authority)});
+			
+			init_bindings();
 		}
-
+		
+		private void init_bindings() {
+			
+		}
+		
+		public void edited_or_added_authority(TreeIter ?tree_iter) {
+			Authority edited_authority = null;
+			if (tree_iter == null) {
+				stdout.printf("Editing empty authority\n");
+				edited_authority = new Authority();
+			}
+			else {
+				// Get the edited action
+				Value authority_value;
+				get_value(tree_iter, ColumnTypes.OBJECT, out authority_value);
+				edited_authority = authority_value.get_object() as PolicyMan.Common.Authority;
+			}
+			
+			// Lets edit the authority
+			selected_authority_controller.set_authority(edited_authority);
+		}
+		
 		public void set_authorities(Gee.List<Authority> ?authorities) {
 			clear();
 			

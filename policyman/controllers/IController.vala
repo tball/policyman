@@ -19,6 +19,6 @@
 
 namespace PolicyMan.Controllers {
 	public interface IController : GLib.Object {
-
+		//public abstract string controller_name();
 	} 
 }

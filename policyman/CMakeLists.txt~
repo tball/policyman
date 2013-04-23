@@ -2,42 +2,34 @@ find_package(PkgConfig)
 pkg_check_modules(GTK REQUIRED gtk+-3.0)
 pkg_check_modules(GEE REQUIRED gee-1.0)
 pkg_check_modules(GMODULE REQUIRED gmodule-2.0)
-pkg_check_modules(DBUS-GLIB REQUIRED dbus-glib-1)
-pkg_check_modules(DBUS REQUIRED dbus-1)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
-pkg_check_modules(POLBACK REQUIRED polkit-backend-1)
-pkg_check_modules(LIBOOBS REQUIRED liboobs-1)
-
 
 # Compile VALA files
 vala_precompile(VALA_C
 SOURCES
 main.vala
 Program.vala
-models/BaseModel.vala
-models/MainWindowModel.vala
-models/ActionListModel.vala
-models/ActionPropertiesModel.vala
-models/ActionListTreeStoreProxy.vala
-models/TopToolbarModel.vala
-models/ImplicitEditorModel.vala
-models/ExplicitOverviewModel.vala
-models/ExplicitActionTreeStore.vala
-models/ExplicitEditorWindowModel.vala
-models/UserSelectModel.vala
-models/UserListTreeStore.vala
+# Controllers
+controllers/IController.vala
+controllers/AccountsTreeStore.vala
+controllers/ActionController.vala
+controllers/ActionManagerController.vala
+controllers/ActionMembersTreeStore.vala
+controllers/ActionsTreeStore.vala
+controllers/AuthoritiesTreeStore.vala
+controllers/AuthorityController.vala
+controllers/AuthorizationsController.vala
+controllers/AuthorizationTreeStore.vala
+
+# Views
 views/IBaseView.vala
 views/MainWindowView.vala
-views/ActionListView.vala
-views/ActionPropertiesView.vala
 views/TopToolbarView.vala
-views/ImplicitEditorView.vala
-views/ExplicitOverviewView.vala
-views/ExplicitEditorWindowView.vala
-views/UserSelectView.vala
-utilities/AccountFunctions.vala
-utilities/AccountProperties.vala
-utilities/AccountType.vala
+views/ActionTreeView.vala
+views/ActionView.vala
+views/AuthorizationsView.vala
+views/AuthoritiesTreeView.vala
+
 
 PACKAGES
 gtk+-3.0
@@ -45,14 +37,14 @@ gmodule-2.0
 gee-1.0
 
 CUSTOM_VAPIS
-${CMAKE_BINARY_DIR}/common/gpolkitcommon.vapi
-${CMAKE_SOURCE_DIR}/vapi/liboobs-1.vapi
-${CMAKE_SOURCE_DIR}/vapi/polkit-1.0.vapi
+${CMAKE_BINARY_DIR}/libpolicyman_common/libpolicyman_common.vapi
+${CMAKE_BINARY_DIR}/libpolicyman_actionmanager/libpolicyman_actionmanager.vapi
+#${CMAKE_SOURCE_DIR}/vapi/liboobs-1.vapi
 )
-include_directories(${POLICYMAN_COMMON_INCLUDE_DIR})
-add_definitions(${LIBOOBS_CFLAGS} ${GTK_CFLAGS} ${GTK_CFLAGS_OTHER} ${GEE_CFLAGS} ${GEE_CFLAGS_OTHER} ${GMODULE_CFLAGS} ${GMODULE_CFLAGS_OTHER} ${DBUS_CFLAGS} ${DBUS_CFLAGS_OTHER} ${GLIB_CFLAGS} ${GLIB_CFLAGS_OTHER} ${DBUS-GLIB_CFLAGS} ${DBUS-GLIB_CFLAGS_OTHER} ${POLBACK_CFLAGS} ${POLBACK_CFLAGS_OTHER} -DGPOLKIT_DATADIR="${GPOLKIT_DATADIR}")
-link_directories(${LIBOOBS_LIBRARY_DIRS} ${GTK_LIBRARY_DIRS} ${GEE_LIBRARY_DIRS} ${GMODUlE_LIBRARY_DIRS} ${DBUS_LIBRARY_DIRS} ${DBUS-GLIB_LIBRARY_DIRS} ${GLIB_LIBRARY_DIRS} ${POLBACK_LIBRARY_DIRS})
+include_directories(${POLICYMAN_COMMON_INCLUDE_DIR} ${POLICYMAN_ACTIONMANAGER_INCLUDE_DIR})
+add_definitions(${LIBOOBS_CFLAGS} ${GTK_CFLAGS} ${GTK_CFLAGS_OTHER} ${GEE_CFLAGS} ${GEE_CFLAGS_OTHER} ${GMODULE_CFLAGS} ${GMODULE_CFLAGS_OTHER} ${GLIB_CFLAGS} ${GLIB_CFLAGS_OTHER})
+link_directories(${LIBOOBS_LIBRARY_DIRS} ${GTK_LIBRARY_DIRS} ${GEE_LIBRARY_DIRS} ${GMODUlE_LIBRARY_DIRS} ${DBUS-GLIB_LIBRARY_DIRS} ${GLIB_LIBRARY_DIRS})
 add_executable(policyman ${VALA_C})
-target_link_libraries(policyman policyman_common ${LIBOOBS_LIBRARIES} ${GTK_LIBRARIES} ${GEE_LIBRARIES} ${GMODULE_LIBRARIES} ${DBUS_LIBRARIES} ${DBUS-GLIB_LIBRARIES} ${GLIB_LIBRARIES} ${POLBACK_LIBRARIES})
+target_link_libraries(policyman policyman_common policyman_actionmanager ${LIBOOBS_LIBRARIES} ${GTK_LIBRARIES} ${GEE_LIBRARIES} ${GMODULE_LIBRARIES} ${GLIB_LIBRARIES})
 
 install(TARGETS policyman DESTINATION ${CMAKE_INSTALL_BINDIR})

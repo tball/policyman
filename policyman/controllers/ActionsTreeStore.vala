@@ -122,7 +122,7 @@
 			return false;
 		}
 
-		public void update_actions(Gee.List<PolicyMan.Common.Action> actions) {
+		public void set_actions(Gee.List<PolicyMan.Common.Action> actions) {
 			clear();
 			
 			// Parse policies			

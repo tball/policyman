@@ -16,3 +16,40 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  **/
+
+using PolicyMan.Common;
+
+namespace PolicyMan.Controllers {
+	public class AuthorityController : Object, IController {
+		private Authority authority = null;
+		
+		public ActionsTreeStore actions_tree_store { get; private set; default = new ActionsTreeStore(); }
+		public AuthorizationsController authorizations_controller { get; private set; default = new AuthorizationsController(); }
+		public bool selected_authority { get; private set; default = false; }
+		public string title { get; set; default = ""; }
+		public string file_path { get; set; default = ""; }
+		
+		public AuthorityController() {
+			init_bindings();
+		}
+		
+		private void init_bindings() {
+			
+		}
+		
+		public void set_authority(Authority ?authority) {
+			this.authority = authority;
+			if (authority == null) {
+				selected_authority = false;
+				return;
+			}
+			
+			title = authority.title;
+			file_path = authority.file_path;
+			
+			authorizations_controller.set_authorizations(authority.authorizations);
+			actions_tree_store.set_actions(authority.actions);
+			selected_authority = true;
+		}
+	}
+}

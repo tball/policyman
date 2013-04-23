@@ -41,7 +41,7 @@ namespace PolicyMan.Controllers {
 				return;
 			}
 			
-			actions_tree_store.update_actions(actions);
+			actions_tree_store.set_actions(actions);
 		}
 		
 		public void connect_model(IController controller) {

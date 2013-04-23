@@ -29,6 +29,7 @@ views/ActionTreeView.vala
 views/ActionView.vala
 views/AuthorizationsView.vala
 views/AuthoritiesTreeView.vala
+views/AuthorityView.vala
 
 
 PACKAGES
