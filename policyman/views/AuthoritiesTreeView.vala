@@ -27,7 +27,7 @@ namespace PolicyMan.Views {
 		private ToolButton remove_authority_rule_button;
 		private AuthorityController authority_controller;
 		
-		public signal void authority_added_or_edited_rule_button_clicked(TreeIter ?tree_iter);
+		public signal void authority_added_or_edited(TreeIter ?tree_iter);
 		
 		public AuthoritiesTreeView() {
 			GLib.Object (orientation: Gtk.Orientation.VERTICAL);
@@ -53,7 +53,7 @@ namespace PolicyMan.Views {
 			remove_authority_rule_button.icon_name = "list-remove-symbolic";
 			
 			// Create view bindings
-			add_authority_rule_button.clicked.connect((sender) => { authority_added_or_edited_rule_button_clicked(null); });
+			add_authority_rule_button.clicked.connect((sender) => { add_or_edit_authority(null); });
 			tree_view.row_activated.connect(explicit_action_selection_double_clicked);
 
 			authority_toolbar.insert(add_authority_rule_button, 0);
@@ -64,27 +64,21 @@ namespace PolicyMan.Views {
 			this.pack_start(authority_toolbar, false);
 		}
 		
-		private void explicit_action_selection_double_clicked(TreeView tree_view, TreePath path, TreeViewColumn column) {
-			TreeModel tree_model;
-			TreeIter tree_iter;
-			tree_view.get_selection().get_selected(out tree_model, out tree_iter);
-
+		private void add_or_edit_authority(TreeIter ?tree_iter) {
 			// Init authority window
 			var authority_view = new AuthorityView();
 			authority_view.transient_for = this.get_ancestor(typeof(Window)) as Window;
 			authority_view.modal = true;
 			authority_view.connect_model(authority_controller);
-			
-			authority_added_or_edited_rule_button_clicked(tree_iter);
-			
-			/*var dialog = new Window();
-			dialog.transient_for = this.get_ancestor(typeof(Window)) as Window;
-			dialog.modal = true;
-			dialog.show_all();*/
-			//dialog.run();
-			
+			authority_added_or_edited(tree_iter);
 			authority_view.show_all();
-			
+		}
+		
+		private void explicit_action_selection_double_clicked(TreeView tree_view, TreePath path, TreeViewColumn column) {
+			TreeModel tree_model;
+			TreeIter tree_iter;
+			tree_view.get_selection().get_selected(out tree_model, out tree_iter);
+			add_or_edit_authority(tree_iter);
 		}
 		
 		public void connect_model(IController controller) {
@@ -96,7 +90,7 @@ namespace PolicyMan.Views {
 			// Bind view to model
 			tree_view.set_model(authorities_tree_store);
 			authority_controller = authorities_tree_store.selected_authority_controller;
-			authority_added_or_edited_rule_button_clicked.connect(authorities_tree_store.edited_or_added_authority);
+			authority_added_or_edited.connect(authorities_tree_store.authority_added_or_edited);
 			
 			/*var explicit_overview_model = controller as AuthoritiesTreeStore;
 			explicit_overview_model.bind_property("explicit-action-list-tree-store", explicit_action_tree_view, "model");

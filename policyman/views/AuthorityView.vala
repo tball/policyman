@@ -115,7 +115,7 @@ namespace PolicyMan.Views {
 
 		public void connect_model(IController controller) {
 			var authority_controller = controller as AuthorityController;
-			authority_controller.bind_property("title", action_title_entry, "text");
+			authority_controller.bind_property("title", action_title_entry, "text", BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE);
 			
 			authorizations_view.connect_model(authority_controller.authorizations_controller);
 			

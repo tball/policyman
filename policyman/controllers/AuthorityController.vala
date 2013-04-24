@@ -25,7 +25,6 @@ namespace PolicyMan.Controllers {
 		
 		public ActionsTreeStore actions_tree_store { get; private set; default = new ActionsTreeStore(); }
 		public AuthorizationsController authorizations_controller { get; private set; default = new AuthorizationsController(); }
-		public bool selected_authority { get; private set; default = false; }
 		public string title { get; set; default = ""; }
 		public string file_path { get; set; default = ""; }
 		
@@ -40,7 +39,6 @@ namespace PolicyMan.Controllers {
 		public void set_authority(Authority ?authority) {
 			this.authority = authority;
 			if (authority == null) {
-				selected_authority = false;
 				return;
 			}
 			
@@ -49,7 +47,10 @@ namespace PolicyMan.Controllers {
 			
 			authorizations_controller.set_authorizations(authority.authorizations);
 			actions_tree_store.set_actions(authority.actions);
-			selected_authority = true;
+		}
+		
+		public void save_changes() {
+			authority.title = title;
 		}
 	}
 }

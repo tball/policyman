@@ -40,7 +40,7 @@ namespace PolicyMan.Controllers {
 			
 		}
 		
-		public void edited_or_added_authority(TreeIter ?tree_iter) {
+		public void authority_added_or_edited(TreeIter ?tree_iter) {
 			Authority edited_authority = null;
 			if (tree_iter == null) {
 				stdout.printf("Editing empty authority\n");
