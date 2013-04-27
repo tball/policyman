@@ -23,6 +23,7 @@ namespace PolicyMan.Controllers {
 	public class AuthorityController : Object, IController {
 		private Authority authority = null;
 		
+		public signal void authority_changed(Authority authority);
 		public ActionsTreeStore actions_tree_store { get; private set; default = new ActionsTreeStore(); }
 		public AuthorizationsController authorizations_controller { get; private set; default = new AuthorizationsController(); }
 		public string title { get; set; default = ""; }
@@ -51,6 +52,8 @@ namespace PolicyMan.Controllers {
 		
 		public void save_changes() {
 			authority.title = title;
+			
+			authority_changed(authority);
 		}
 	}
 }

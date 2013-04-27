@@ -35,6 +35,7 @@ namespace PolicyMan.Common {
 				new Variant.string(file_path),
 				authorizations.to_variant(),
 				new Variant.string(accounts_string),
+				new Variant.string(actions_string)
 			};
 			return new Variant.tuple(variant_arr);
 		}
@@ -44,6 +45,7 @@ namespace PolicyMan.Common {
 			file_path = variant.get_child_value(1).get_string();
 			authorizations.from_variant(variant.get_child_value(2));
 			accounts_string = variant.get_child_value(3).get_string();
+			actions_string = variant.get_child_value(4).get_string();
 		}
 	}
 }

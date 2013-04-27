@@ -30,7 +30,7 @@ namespace PolicyMan {
 	
 	[DBus (name = "org.gnome.policyman.helper")]
 	public class PolicyManHelper : Object {
-		public Variant[] get_actions(BusName bus_name) throws GLib.Error {
+		public Variant get_actions(BusName bus_name) throws GLib.Error {
 			// Check permissions
 			string error_str;
 			if (!grant_permission(bus_name, "org.gnome.policyman.GetActions", out error_str)) {
@@ -51,26 +51,20 @@ namespace PolicyMan {
 			var authorities = get_authorities();
 
 			// Convert action to our own format
-			var action_variants = new Variant[action_descriptors.length()];
+			var actions = new ArrayList<PolicyMan.Common.Action>();
 			for (var i = 0; i < action_descriptors.length(); i++) {
 				var action_desc = action_descriptors.nth_data(i);
 				if (action_desc == null) {
 					continue;
 				}
 				var action = create_action_from_action_description(action_desc);
-				
-				// Bind authorities to action
-				foreach (var authority in authorities) {
-					if (authority.actions_string.contains(action.id)) {
-						action.authorities.add(authority);
-					}
-				}
-				
-				var action_variant = action.to_variant();
-				action_variants[i] = action_variant;
+				actions.add(action);
 			}
 			
-			return action_variants;
+			// Create container, which we will sent to our client
+			var container = new Container(actions, authorities);
+			
+			return container.to_variant();
 		}
 		
 		private Gee.List<PolicyMan.Common.Authority> get_authorities() {

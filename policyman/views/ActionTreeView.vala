@@ -67,5 +67,5 @@
 			
 			this.add(tree_view);
 		}
-	 }
- }
+	}
+}

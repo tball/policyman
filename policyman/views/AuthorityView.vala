@@ -88,8 +88,9 @@ namespace PolicyMan.Views {
 			action_authentication_label.halign = Align.START;
 			action_authentication_label.set_markup("<b>Authentication</b>");
 			
-			save_changes_button.clicked.connect((sender) => { save_authority(); destroy(); });
-			cancel_changes_button.clicked.connect((sender) => { destroy(); });
+			delete_event.connect(hide_on_delete);
+			save_changes_button.clicked.connect((sender) => { save_authority(); set_visible(false); });
+			cancel_changes_button.clicked.connect((sender) => { set_visible(false); });
 			add_user_button.clicked.connect((sender) => { add_user_button_clicked(); });
 			remove_user_button.clicked.connect((sender) => { remove_user_button_clicked(); });
 			
@@ -118,6 +119,8 @@ namespace PolicyMan.Views {
 			authority_controller.bind_property("title", action_title_entry, "text", BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE);
 			
 			authorizations_view.connect_model(authority_controller.authorizations_controller);
+			save_authority.connect(authority_controller.save_changes);
+			
 			
 			// Connect view events to model
 			/*save_authority.connect(authority_controller.save_authority);

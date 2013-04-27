@@ -53,12 +53,6 @@ namespace PolicyMan.Common {
 		}
 		
 		public Variant to_variant() {
-			var authority_variants = new Variant[authorities.size];
-			for (var i = 0; i < authorities.size; i++) {
-				var authority = authorities[i];
-				authority_variants[i] = authority.to_variant();
-			}
-			
 			var variant_arr = new Variant[] {
 				new Variant.string(vendor),
 				new Variant.string(vendor_url),
@@ -67,7 +61,6 @@ namespace PolicyMan.Common {
 				new Variant.string(description),
 				new Variant.string(message),
 				authorizations.to_variant(),
-				authority_variants.length == 0 ? new Variant.boolean(false) : new Variant.tuple(authority_variants)
 			};
 			
 			return new Variant.tuple(variant_arr);
@@ -85,19 +78,6 @@ namespace PolicyMan.Common {
 			description = variant.get_child_value(4).get_string();
 			message = variant.get_child_value(5).get_string();
 			authorizations.from_variant(variant.get_child_value(6));
-			
-			var authorities_variant_tuple = variant.get_child_value(7);
-			
-			// If the variant type is boolean, just ignore it.
-			if (authorities_variant_tuple.is_of_type(VariantType.BOOLEAN)) {
-				return;
-			}
-			
-			foreach (var authority_variant in authorities_variant_tuple) {
-				var authority = new Authority();
-				authority.from_variant(authority_variant);
-				authorities.add(authority);
-			}
 		}
 	}
 }

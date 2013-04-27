@@ -31,26 +31,29 @@ namespace PolicyMan {
 				return false;
 			}
 
-			Variant[] action_variants = null;
+			Variant container_variant = null;
 			try {
-				action_variants = policy_man_helper.get_actions();
+				container_variant = policy_man_helper.get_actions();
 			} catch (IOError e) {
 				actions = null;
 				return false;
 			}
 			
-			if (action_variants == null) {
+			if (container_variant == null) {
 				actions = null;
 				return false;
 			}
 			
-			actions = ISerializable.to_object_list<PolicyMan.Common.Action>(action_variants);
-			
-			// Attach actions to the authorities
-			attach_actions_to_authorities(actions);
+			// Create our container
+			var container = new Container(null, null);
+			container.from_variant(container_variant);
 			
 			// Attach accounts to the authorities
-			attach_accounts_to_authorities(actions);
+			//attach_accounts_to_authorities(actions);
+			actions = container.get_actions();
+			if (actions == null) {
+				return false;
+			}
 			
 			return true;
 		}
@@ -117,14 +120,6 @@ namespace PolicyMan {
 						}
 					}
 					attached_authorities.add(authority);
-				}
-			}
-		}
-		
-		private void attach_actions_to_authorities(Gee.List<PolicyMan.Common.Action> actions) {
-			foreach (var action in actions) {
-				foreach (var authority in action.authorities) {
-					authority.actions.add(action);
 				}
 			}
 		}

@@ -37,15 +37,10 @@ namespace PolicyMan.Controllers {
 			var action_manager = new ActionManager();
 			Gee.List<PolicyMan.Common.Action> actions;
 			if (!action_manager.load(out actions)) {
-				close();
 				return;
 			}
 			
 			actions_tree_store.set_actions(actions);
-		}
-		
-		public void connect_model(IController controller) {
-			
 		}
 		
 		public void save_changes() {
