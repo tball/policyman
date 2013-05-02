@@ -34,21 +34,37 @@ namespace PolicyMan.Common {
 			if (actions == null) {
 				return null;
 			}
-			if (authorities == null || actions_attached_to_authorities) {
-				return actions;
+			attach_actions_to_authorities();
+		
+			return actions;
+		}
+		
+		public Gee.List<Authority> ?get_authorities() {
+			if (authorities == null) {
+				return null;
+			}
+			attach_actions_to_authorities();
+			
+			return authorities;
+		}
+		
+		private void attach_actions_to_authorities() {
+			if (authorities == null || actions == null || actions_attached_to_authorities) {
+				return;
 			}
 			
 			// Here we are going to attach the authorities to the actions
 			foreach(var authority in authorities) {
 				foreach(var action in actions) {
+					// TODO: Create smarter parsing of the actions_string (including wildcards etc.)
 					if (authority.actions_string.contains(action.id)) {
 						action.authorities.add(authority);
+						authority.actions.add(action);
 					}
 				}
 			}
-			actions_attached_to_authorities = true;
 			
-			return actions;
+			actions_attached_to_authorities = true;
 		}
 		
 		public Variant to_variant() {

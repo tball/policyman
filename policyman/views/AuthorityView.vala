@@ -19,19 +19,15 @@
 
 using Gtk;
 using Gee;
-using PolicyMan.Common;
 using PolicyMan.Controllers;
 
 namespace PolicyMan.Views {
 	public class AuthorityView : Window, IBaseView {
 		private AuthorizationsView authorizations_view;
+		private AccountsView accounts_view;
 		private Button save_changes_button;
 		private Button cancel_changes_button;
 		private Entry action_title_entry;
-		private TreeView selected_user_tree_view;
-		private TreeView not_selected_user_tree_view;
-		private Button add_user_button;
-		private Button remove_user_button;
 	
 		public signal void save_authority(); 
 
@@ -47,42 +43,15 @@ namespace PolicyMan.Views {
 		protected void init() {
 			var vertical_box = new Box(Orientation.VERTICAL, 4) { margin = 10 };
 			var horizontal_box = new Box(Orientation.HORIZONTAL, 4);
-			var horizontal_user_select_box = new Box(Orientation.HORIZONTAL, 4);
-			var vertical_select_buttons_box = new Box(Orientation.VERTICAL, 4) { margin = 4 };
 			var title_label = new Label(null);
 			var action_authentication_label = new Label(null);
-			var selected_user_scrolled_window = new ScrolledWindow(null, null);
-			var not_selected_user_scrolled_window = new ScrolledWindow(null, null);
-			var user_select_image = new Image.from_stock(Stock.GO_FORWARD, IconSize.BUTTON);
-			var user_unselect_image = new Image.from_stock(Stock.GO_BACK, IconSize.BUTTON);
-			add_user_button = new Button() { image = user_select_image };
-			remove_user_button = new Button() { image = user_unselect_image };
-			var add_remove_user_buttons_alignment = new Alignment(0.5f, 0.5f, 0.0f, 0.0f);
+			accounts_view = new AccountsView();
 			
-			selected_user_tree_view = new TreeView();
-			selected_user_tree_view.get_selection().mode = SelectionMode.MULTIPLE;
-			not_selected_user_tree_view = new TreeView();
-			not_selected_user_tree_view.get_selection().mode = SelectionMode.MULTIPLE;
 			authorizations_view = new AuthorizationsView();
 			save_changes_button = new Button.with_label("Save");
 			cancel_changes_button = new Button.with_label("Cancel");
 			action_title_entry = new Entry();
-			
-			// Init tree view
-			var selected_user_text_cell_rendere = new CellRendererText();
-			var not_selected_user_text_cell_rendere = new CellRendererText();
-			var selected_user_tree_view_column = new TreeViewColumn() { title = "Selected Users" };
-			var not_selected_user_tree_view_column = new TreeViewColumn() { title = "Available Users" };
-			
-			selected_user_tree_view_column.pack_start(selected_user_text_cell_rendere, false);
-			//selected_user_tree_view_column.set_attributes(selected_user_text_cell_rendere, "markup", UserListTreeStore.ColumnTypes.NAME, "sensitive", UserListTreeStore.ColumnTypes.SELECTABLE, null);
-			
-			not_selected_user_tree_view_column.pack_start(not_selected_user_text_cell_rendere, false);
-			//not_selected_user_tree_view_column.set_attributes(not_selected_user_text_cell_rendere, "markup", UserListTreeStore.ColumnTypes.NAME, "sensitive", UserListTreeStore.ColumnTypes.SELECTABLE, null);
-			
-			selected_user_tree_view.append_column(selected_user_tree_view_column);
-			not_selected_user_tree_view.append_column(not_selected_user_tree_view_column);
-			
+
 			title_label.halign = Align.START;
 			title_label.set_markup("<b>Title</b>");
 			action_authentication_label.halign = Align.START;
@@ -91,24 +60,14 @@ namespace PolicyMan.Views {
 			delete_event.connect(hide_on_delete);
 			save_changes_button.clicked.connect((sender) => { save_authority(); set_visible(false); });
 			cancel_changes_button.clicked.connect((sender) => { set_visible(false); });
-			add_user_button.clicked.connect((sender) => { add_user_button_clicked(); });
-			remove_user_button.clicked.connect((sender) => { remove_user_button_clicked(); });
 			
-			vertical_select_buttons_box.pack_start(add_user_button, false);
-			vertical_select_buttons_box.pack_start(remove_user_button, false);
-			add_remove_user_buttons_alignment.add(vertical_select_buttons_box);
-			selected_user_scrolled_window.add(selected_user_tree_view);
-			not_selected_user_scrolled_window.add(not_selected_user_tree_view);
 			horizontal_box.pack_start(save_changes_button, false);
 			horizontal_box.pack_start(cancel_changes_button, false);
-			horizontal_user_select_box.pack_start(not_selected_user_scrolled_window, true);
-			horizontal_user_select_box.pack_start(add_remove_user_buttons_alignment, false);
-			horizontal_user_select_box.pack_start(selected_user_scrolled_window, true);
 			vertical_box.pack_start(title_label, false);
 			vertical_box.pack_start(action_title_entry, false);
 			vertical_box.pack_start(action_authentication_label, false);
 			vertical_box.pack_start(authorizations_view, false);
-			vertical_box.pack_start(horizontal_user_select_box, true);
+			vertical_box.pack_start(accounts_view, false);
 			vertical_box.pack_start(horizontal_box, false);
 			
 			this.add(vertical_box);
@@ -119,61 +78,8 @@ namespace PolicyMan.Views {
 			authority_controller.bind_property("title", action_title_entry, "text", BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE);
 			
 			authorizations_view.connect_model(authority_controller.authorizations_controller);
+			accounts_view.connect_model(authority_controller.accounts_tree_store);
 			save_authority.connect(authority_controller.save_changes);
-			
-			
-			// Connect view events to model
-			/*save_authority.connect(authority_controller.save_authority);
-			users_added_to_explicit_action.connect(explicit_editor_window_model.users_added_to_explicit_action);
-			users_removed_to_explicit_action.connect(explicit_editor_window_model.users_removed_to_explicit_action);
-			
-			// Connect and bind child views to child models
-			implicit_editor_view.connect_model(explicit_editor_window_model.implicit_editor_model);
-			not_selected_user_tree_view.model = explicit_editor_window_model.not_selected_user_list_tree_store;
-			selected_user_tree_view.model = explicit_editor_window_model.selected_user_list_tree_store;*/
-			
-		}
-		
-		public void add_user_button_clicked() {
-			var added_user_names = get_selected_user_names_from_tree_view(not_selected_user_tree_view);
-			if (added_user_names.size <= 0) {
-				return;
-			}
-			
-			//users_added_to_explicit_action(added_user_names);
-		}
-		
-		public void remove_user_button_clicked() {
-			var removed_user_names = get_selected_user_names_from_tree_view(selected_user_tree_view);
-			if (removed_user_names.size <= 0) {
-				return;
-			}
-			
-			//users_removed_to_explicit_action(removed_user_names);
-		}
-		
-		private Gee.List<string> get_selected_user_names_from_tree_view(TreeView tree_view) {
-			/*var selected_user_names = new ArrayList<string>();
-			
-			// Get the selected 'unselected' users and move it to the 'selected' users
-			TreeModel tree_model;
-			var selected_tree_paths = tree_view.get_selection().get_selected_rows(out tree_model);
-		
-			foreach (var tree_path in selected_tree_paths) {
-				TreeIter tree_iter;
-				if (!tree_model.get_iter(out tree_iter, tree_path)) {
-					continue;
-				}
-				
-				Value user_name_value;
-				tree_model.get_value(tree_iter, UserListTreeStore.ColumnTypes.OBJECT, out user_name_value);
-				
-				var account = user_name_value.get_object() as Account;
-				selected_user_names.add(account.user_name);
-			}
-			
-			return selected_user_names;*/
-			return new ArrayList<string>();
 		}
 	}
 }

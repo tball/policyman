@@ -20,6 +20,32 @@
 namespace PolicyMan.Common {
 	public enum AccountType {
 		LINUX_USER,
-		LINUX_GROUP
+		LINUX_GROUP;
+		
+		public string to_string() {
+			switch (this) {
+				case LINUX_USER:
+					return "User";
+				case LINUX_GROUP:
+					return "Group";
+				default:
+					assert_not_reached();
+			}
+		}
+		
+		public static AccountType[] all() {
+			return { 	AccountType.LINUX_USER, AccountType.LINUX_GROUP };
+		}
+		
+		public static AccountType from_string(string str) {
+			switch (str) {
+				case "User":
+					return LINUX_USER;
+				case "Group":
+					return LINUX_GROUP;
+				default:
+					assert_not_reached();
+			}
+		}
 	}
 }

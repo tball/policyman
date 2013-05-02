@@ -26,6 +26,7 @@ namespace PolicyMan.Controllers {
 		public signal void authority_changed(Authority authority);
 		public ActionsTreeStore actions_tree_store { get; private set; default = new ActionsTreeStore(); }
 		public AuthorizationsController authorizations_controller { get; private set; default = new AuthorizationsController(); }
+		public AccountsTreeStore accounts_tree_store { get; private set; default = new AccountsTreeStore(); }
 		public string title { get; set; default = ""; }
 		public string file_path { get; set; default = ""; }
 		
@@ -48,10 +49,17 @@ namespace PolicyMan.Controllers {
 			
 			authorizations_controller.set_authorizations(authority.authorizations);
 			actions_tree_store.set_actions(authority.actions);
+			accounts_tree_store.set_accounts(authority.accounts);
 		}
 		
 		public void save_changes() {
 			authority.title = title;
+			
+			// Save accounts
+			authority.accounts.clear();
+			foreach(var account in accounts_tree_store.selected_accounts) {
+				authority.accounts.add(account);
+			}
 			
 			authority_changed(authority);
 		}

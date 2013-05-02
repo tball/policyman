@@ -47,12 +47,15 @@ namespace PolicyMan {
 			// Create our container
 			var container = new Container(null, null);
 			container.from_variant(container_variant);
-			
-			// Attach accounts to the authorities
-			//attach_accounts_to_authorities(actions);
 			actions = container.get_actions();
 			if (actions == null) {
 				return false;
+			}
+			
+			// Attach accounts to the authorities
+			var authorities = container.get_authorities();
+			if (authorities != null) {
+				attach_accounts_to_authorities(authorities);
 			}
 			
 			return true;
@@ -73,53 +76,45 @@ namespace PolicyMan {
 			return true;
 		}
 		
-		private void attach_accounts_to_authorities(Gee.List<PolicyMan.Common.Action> actions) {
+		private void attach_accounts_to_authorities(Gee.List<Authority> authorities) {
 			// Fetch all the system accounts
 			var user_accounts = AccountUtilities.get_users();
 			var group_accounts = AccountUtilities.get_groups();
-			Gee.List<Authority> attached_authorities = new ArrayList<Authority>();
 			
 			// Bind accounts to the authorities
-			foreach (var action in actions) {
-				foreach (var authority in action.authorities) {
-					if (attached_authorities.index_of(authority) != -1) {
+			foreach (var authority in authorities) {
+				var splitted_account_string = authority.accounts_string.split(";");
+				
+				foreach (var account_string in splitted_account_string) {
+					string[] type_and_name = account_string.split(":");
+					if (type_and_name == null || type_and_name.length != 2) {
+						// Invalid
 						continue;
 					}
-
-					var splitted_account_string = authority.accounts_string.split(";");
 					
-					foreach (var account_string in splitted_account_string) {
-						string[] type_and_name = account_string.split(":");
-						if (type_and_name == null || type_and_name.length != 2) {
-							// Invalid
-							continue;
-						}
-						
-						var type_string = type_and_name[0];
-						var user_string = type_and_name[1];
-						type_string = type_string.chomp().chug();
-						user_string = user_string.chomp().chug();
-						
-						if (type_string == "unix-group") {
-							// Search for the correntsponding group
-							foreach (var group_account in group_accounts) {
-								if (group_account.user_name == user_string) {
-									// Match!
-									authority.accounts.add(group_account);
-								}
-							}
-						}
-						else if (type_string == "unix-user") {
-							// Search for the correntsponding user
-							foreach (var user_account in user_accounts) {
-								if (user_account.user_name == user_string) {
-									// Match!
-									authority.accounts.add(user_account);
-								}
+					var type_string = type_and_name[0];
+					var user_string = type_and_name[1];
+					type_string = type_string.chomp().chug();
+					user_string = user_string.chomp().chug();
+					
+					if (type_string == "unix-group") {
+						// Search for the correntsponding group
+						foreach (var group_account in group_accounts) {
+							if (group_account.user_name == user_string) {
+								// Match!
+								authority.accounts.add(group_account);
 							}
 						}
 					}
-					attached_authorities.add(authority);
+					else if (type_string == "unix-user") {
+						// Search for the correntsponding user
+						foreach (var user_account in user_accounts) {
+							if (user_account.user_name == user_string) {
+								// Match!
+								authority.accounts.add(user_account);
+							}
+						}
+					}
 				}
 			}
 		}

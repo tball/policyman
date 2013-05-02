@@ -19,7 +19,6 @@
  
  using Gtk;
  using PolicyMan.Controllers;
- using PolicyMan.Common;
  
  namespace PolicyMan.Views {
 	 public class ActionTreeView : ScrolledWindow, IBaseView {

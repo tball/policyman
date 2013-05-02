@@ -30,6 +30,7 @@ views/ActionView.vala
 views/AuthorizationsView.vala
 views/AuthoritiesTreeView.vala
 views/AuthorityView.vala
+views/AccountsView.vala
 
 
 PACKAGES
