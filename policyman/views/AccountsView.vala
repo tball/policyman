@@ -26,6 +26,9 @@ namespace PolicyMan.Views {
 		private CellRendererCombo account_type_renderer_combo;
 		private CellRendererCombo account_user_name_renderer_combo;
 		private Button add_account_button;
+		private Button remove_account_button;
+		
+		public signal void account_deleted(TreeIter tree_iter);
 		
 		public AccountsView() {
 			GLib.Object (orientation: Orientation.VERTICAL);
@@ -36,6 +39,15 @@ namespace PolicyMan.Views {
 			var horizontal_box = new Box(Orientation.HORIZONTAL, 5);
 			var scrolled_window = new ScrolledWindow(null, null) { expand = true, shadow_type = ShadowType.IN };
 			add_account_button = new Button.with_label("Add");
+			remove_account_button = new Button.with_label("Remove");
+			remove_account_button.clicked.connect((sender) => { 
+					TreeIter tree_iter;
+					TreeModel tree_model;
+					if (tree_view.get_selection().get_selected(out tree_model, out tree_iter)) {
+						account_deleted(tree_iter);
+					}
+				});
+			
 			tree_view = new TreeView();
 			
 			// Add renderers to the treeview
@@ -59,7 +71,9 @@ namespace PolicyMan.Views {
 			tree_view.insert_column(account_user_name_column, 1);
 			
 			scrolled_window.add(tree_view);
+			horizontal_box.pack_end(remove_account_button, false);
 			horizontal_box.pack_end(add_account_button, false);
+			
 			pack_start(scrolled_window, false);
 			pack_start(horizontal_box, false);
 		}
@@ -74,6 +88,7 @@ namespace PolicyMan.Views {
 			account_type_renderer_combo.changed.connect(accounts_tree_store.account_type_changed);
 			account_user_name_renderer_combo.changed.connect(accounts_tree_store.account_name_changed);
 			add_account_button.clicked.connect(accounts_tree_store.add_account);
+			account_deleted.connect(accounts_tree_store.delete_account);
 			
 			//account_type_renderer_combo.text_column = AccountsTreeStore.ColumnTypes.ACCOUNT_USER_NAME;
 		}

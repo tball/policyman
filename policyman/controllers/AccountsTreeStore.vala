@@ -83,6 +83,25 @@ namespace PolicyMan.Controllers {
 			}
 		}
 		
+		public void delete_account(TreeIter ?account_tree_iter) {
+			if (account_tree_iter == null) {
+				return;
+			}
+			
+			// Get Account
+			Value account_value;
+			get_value(account_tree_iter, ColumnTypes.OBJECT, out account_value);
+			var account = account_value.get_object() as Account;
+			gtk_tree_store_remove(this, (TreeIter *)account_tree_iter);
+			
+			if (account == null) {
+				return;
+			}
+			
+			// Remove it
+			selected_accounts.remove(account);
+		}
+		
 		public void add_account() {
 			var new_account = user_accounts.first();
 			selected_accounts.add(new_account);
