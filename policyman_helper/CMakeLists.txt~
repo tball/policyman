@@ -1,7 +1,12 @@
 find_package(PkgConfig)
 pkg_check_modules(GIO REQUIRED gio-2.0)
 pkg_check_modules(XML REQUIRED libxml-2.0)
-pkg_check_modules(POLBACK REQUIRED polkit-backend-1)
+pkg_check_modules(POLBACK polkit-backend-1)
+
+if (NOT POLBACK_FOUND)
+  pkg_check_modules(POLBACK REQUIRED polkit-gobject-1)
+endif()
+
 
 vala_precompile(VALA_C
 
@@ -15,7 +20,7 @@ libxml-2.0
 
 CUSTOM_VAPIS
 ${CMAKE_SOURCE_DIR}/vapi/polkit-1.0.vapi
-${CMAKE_BINARY_DIR}/vapi/policyman_common.vapi
+${CMAKE_BINARY_DIR}/libpolicyman_common/libpolicyman_common.vapi
 )
 
 set(CMAKE_INSTALL_DBUS_SERVICESDIR ${CMAKE_INSTALL_DATADIR}/dbus-1/system-services)
@@ -40,8 +45,8 @@ add_executable(policyman_helper ${VALA_C})
 target_link_libraries(policyman_helper policyman_common ${GEE_LIBRARIES} ${DBUS_LIBRARIES} ${DBUS-GLIB_LIBRARIES} ${GLIB_LIBRARIES} ${GIO_LIBRARIES} ${XML_LIBRARIES} ${POLBACK_LIBRARIES})
 
 install(TARGETS policyman_helper DESTINATION ${CMAKE_INSTALL_LIBEXECDIR})
-install(FILES org.gnome.policyman.helper.conf DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}/dbus-1/system.d)
-install(FILES org.gnome.policyman.helper.xml DESTINATION ${CMAKE_INSTALL_DBUS_INTERFACESDIR} )
-install(FILES org.gnome.policyman.policy DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions/)
+install(FILES org.freedesktop.policyman.helper.conf DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}/dbus-1/system.d)
+install(FILES org.freedesktop.policyman.helper.xml DESTINATION ${CMAKE_INSTALL_DBUS_INTERFACESDIR} )
+install(FILES org.freedesktop.policyman.policy DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions/)
 dbus_add_activation_system_service(org.gnome.policyman.helper.service.in)
 

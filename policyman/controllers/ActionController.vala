@@ -37,7 +37,7 @@ namespace PolicyMan.Controllers {
 		}
 		
 		private void init_bindings() {
-			
+			authorizations_controller.authorizations_changed.connect((sender) => { if ( action != null ) action.action_changed = true; });
 		}
 		
 		public void set_action(PolicyMan.Common.Action ?action) {

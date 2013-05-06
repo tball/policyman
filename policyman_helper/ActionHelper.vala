@@ -28,12 +28,12 @@ namespace PolicyMan {
 		return str_array[str_array.length - 1];
 	}
 	
-	[DBus (name = "org.gnome.policyman.helper")]
+	[DBus (name = "org.freedesktop.policyman.helper")]
 	public class PolicyManHelper : Object {
 		public Variant get_actions(BusName bus_name) throws GLib.Error {
 			// Check permissions
 			string error_str;
-			if (!grant_permission(bus_name, "org.gnome.policyman.GetActions", out error_str)) {
+			if (!grant_permission(bus_name, "org.freedesktop.policyman.GetActions", out error_str)) {
 				throw new PolicyManHelperError.SOME_ERROR("Cannot get actions due to the following error: " + error_str);
 			}
 			
@@ -61,7 +61,7 @@ namespace PolicyMan {
 				actions.add(action);
 			}
 			
-			// Create container, which we will sent to our client
+			// Create container, which we will send to our client
 			var container = new Container(actions, authorities);
 			
 			return container.to_variant();
@@ -171,6 +171,25 @@ namespace PolicyMan {
 			}
 		}
 		
+		private string get_string_from_authorization(Authorization authorization) {
+			switch(authorization) {
+				case Authorization.NOT_AUTHORIZED:
+					return "no";
+				case Authorization.AUTHORIZED:
+					return "yes";
+				case Authorization.AUTHENTICATION_REQUIRED:
+					return "auth_self";
+				case Authorization.ADMINISTRATOR_AUTHENTICATION_REQUIRED:
+					return "auth_admin";
+				case Authorization.AUTHENTICATION_REQUIRED_RETAINED:
+					return "auth_self_keep";
+				case Authorization.ADMINISTRATOR_AUTHENTICATION_REQUIRED_RETAINED:
+					return "auth_admin_keep";
+				default:
+					return "no";
+			}
+		}
+		
 		private Gee.List<string>? get_authorities_file_paths(string search_path)
 		{
 			var authority_paths = new ArrayList<string>();
@@ -206,8 +225,183 @@ namespace PolicyMan {
 			return authority_paths;
 		}
 		
-		public void set_actions(Variant[] action_variants, BusName bus_name) throws GLib.Error {
+		public void set_actions(Variant container_variant, BusName bus_name) throws GLib.Error {
+			// Check permissions
+			string error_str;
+			if (!grant_permission(bus_name, "org.freedesktop.policyman.SetActions", out error_str)) {
+				throw new PolicyManHelperError.SOME_ERROR("Cannot set actions due to the following error: " + error_str);
+			}
 			
+			// Convert container variant to actual actions and authorities
+			var container = new Container(null, null);
+			container.from_variant(container_variant);
+			var actions = container.get_actions();
+			var authorities = container.get_authorities();
+			
+			// Save the actions
+			foreach (var action in actions) {
+				if ( action.action_changed ) {
+					save_action(action);
+				}
+			}
+			
+			// Save the authorities
+			/*foreach (var authority in authorities) {
+				
+			}*/
+		}
+		
+		private bool find_action_path_from_id(string action_id, out string action_path) {
+			var root_path = Ressources.ACTION_DIR;
+			var action_search_prefixes = action_id.split(".");
+			
+			bool found_path = false;
+			while (true) {
+				action_path = root_path + "/" + string.joinv(".", action_search_prefixes) + ".policy";
+				// stdout.printf("Searching for implicit action at " + action_path + "\n");
+				
+				var action_file = File.new_for_path(action_path );
+				if (action_file.query_exists()) {
+					// stdout.printf("Found implicit action at " + action_path + "\n");
+					found_path = true;
+					break;
+				}
+				
+				// Should we give up our search?
+				if (action_search_prefixes.length <= 2) {
+					return false;
+				}
+				
+				// Remove last search prefix
+				action_search_prefixes = action_search_prefixes[0: action_search_prefixes.length - 1];
+			}
+			
+			return found_path;
+		}
+		
+		private void save_action(PolicyMan.Common.Action action) {
+			string action_path;
+			if (!find_action_path_from_id(action.id, out action_path)) {
+				stdout.printf("Didn't find path for action %s\n", action.id);
+				return;
+			}
+			
+			// TODO: Write the xml entry
+			Xml.Doc* doc = Parser.parse_file (action_path);
+			if (doc == null) {
+				stdout.printf("Doc == null for action %s\n", action.id);
+				return;
+        	}
+			
+			// Get the root node. notice the dereferencing operator -> instead of .
+		    Xml.Node* root = doc->get_root_element ();
+		    if (root == null) {
+		        // Free the document manually before returning
+		        stdout.printf("Null root element, %s\n", action.id);
+		        delete doc;
+		        return;
+		    }
+		    
+		    // Search for the first action node
+		    var action_node = first_child_node(root, "action");
+		    if (action_node == null) {
+		    	// Didn't find any action nodes
+		    	stdout.printf("Didn't find any action nodes for path %s action %s\n", action_path, action.id);
+		    	return;
+		    }
+		    
+		    // Search for the action node with our action_id
+		    Xml.Attr* prop = action_node->properties;
+		    string attr_content = "";
+		    while (action_node != null) {
+		    	prop = action_node->properties;
+		    	attr_content = prop->children->content;
+		    	
+		    	if (prop->name == "id" && attr_content == action.id) {
+		    		// Correct node found
+		    		break;
+		    	}
+		    	
+		    	action_node = next_sibling_node(action_node, "action");
+		    }
+		    
+		    if (action_node == null) {
+		    	stdout.printf("Didn't find the right action node for id %s path %s\n", action.id, action_path);
+		    	return;
+		    }
+		    
+		    // Find the defaults node under the action node
+		    var defaults_node = first_child_node(action_node, "defaults");
+		    if (defaults_node == null) {
+		    	// Didn't find any defaults nodes
+		    	stdout.printf("Didn't find any defaults nodes for path %s action %s\n", action_path, action.id);
+		    	return;
+		    }
+		    
+
+		    // Set or overwrite the 3 nodes
+		    add_child_node_with_content(defaults_node, "allow_any", get_string_from_authorization(action.authorizations.allow_any));
+		    add_child_node_with_content(defaults_node, "allow_inactive", get_string_from_authorization(action.authorizations.allow_inactive));
+		    add_child_node_with_content(defaults_node, "allow_active", get_string_from_authorization(action.authorizations.allow_active));
+		    
+		    // Now save the doc
+		    doc->save_file(action_path);
+		    
+			// Manually cleanup the xml doc
+			delete doc;
+		}
+		
+		private void add_child_node_with_content(Xml.Node *parent, string child_name, string content) {
+			Xml.Ns* ns = new Xml.Ns (null, "", "");
+        	ns->type = Xml.ElementType.ELEMENT_NODE;
+		
+			var child_node = first_child_node(parent, child_name);
+		    if (child_node == null) {
+		    	// Create new child node
+		    	parent->new_text_child (ns, child_name, content);
+		    } else {
+		    	child_node->set_content(content);
+		    }
+		}
+		
+		private Xml.Node* next_sibling_node(Xml.Node *node, string searched_node_name) {
+			Xml.Node* sibling_node = node->next;
+			while (sibling_node != null) {
+				if (sibling_node->type != ElementType.ELEMENT_NODE) {
+					sibling_node = sibling_node->next;
+		            continue;
+		        }
+				
+				if (sibling_node->name == searched_node_name) {
+					return sibling_node;
+				}
+				sibling_node = sibling_node->next;
+			}
+			
+			return null;
+		}
+		
+		private Xml.Node* first_child_node(Xml.Node *parent_node, string searched_node_name) {
+		    // Loop over the passed node's children
+		    for (Xml.Node* iter = parent_node->children; iter != null; iter = iter->next) {
+		        // Spaces between tags are also nodes, discard them
+		        if (iter->type != ElementType.ELEMENT_NODE) {
+		            continue;
+		        }
+
+		        if (iter->name == searched_node_name) {
+		        	return iter;
+		        }
+
+		        // Followed by its children nodes
+		        var child_node = first_child_node (iter, searched_node_name);
+		        if (child_node != null) {
+		        	return child_node;
+		        }
+		    }
+		    
+		    // We didn't find anything in this node
+		    return null;
 		}
 		
 		private static Authorization get_authorization_from_impl(ImplicitAuthorization implicit_authorization) {
@@ -271,7 +465,7 @@ namespace PolicyMan {
 		}
 	}
 
-	[DBus (name = "org.gnome.policyman.PolicyManHelperError")]
+	[DBus (name = "org.freedesktop.policyman.PolicyManHelperError")]
 	public errordomain PolicyManHelperError
 	{
 		SOME_ERROR
@@ -279,7 +473,7 @@ namespace PolicyMan {
 
 	void on_bus_aquired (DBusConnection conn) {
 		try {
-			conn.register_object ("/org/gnome/policyman/helper", new PolicyManHelper());
+			conn.register_object ("/org/freedesktop/policyman/helper", new PolicyManHelper());
 		}
 		catch (IOError e) {
 			stderr.printf ("Could not register service\n");
@@ -287,7 +481,7 @@ namespace PolicyMan {
 	}
 
 	void main() {
-		Bus.own_name (BusType.SYSTEM, "org.gnome.policyman.helper", BusNameOwnerFlags.NONE,
+		Bus.own_name (BusType.SYSTEM, "org.freedesktop.policyman.helper", BusNameOwnerFlags.NONE,
 					  on_bus_aquired,
 					  () => {},
 					  () => stderr.printf ("Could not aquire name\n"));

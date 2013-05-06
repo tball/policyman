@@ -45,8 +45,8 @@ add_executable(policyman_helper ${VALA_C})
 target_link_libraries(policyman_helper policyman_common ${GEE_LIBRARIES} ${DBUS_LIBRARIES} ${DBUS-GLIB_LIBRARIES} ${GLIB_LIBRARIES} ${GIO_LIBRARIES} ${XML_LIBRARIES} ${POLBACK_LIBRARIES})
 
 install(TARGETS policyman_helper DESTINATION ${CMAKE_INSTALL_LIBEXECDIR})
-install(FILES org.gnome.policyman.helper.conf DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}/dbus-1/system.d)
-install(FILES org.gnome.policyman.helper.xml DESTINATION ${CMAKE_INSTALL_DBUS_INTERFACESDIR} )
-install(FILES org.gnome.policyman.policy DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions/)
-dbus_add_activation_system_service(org.gnome.policyman.helper.service.in)
+install(FILES org.freedesktop.policyman.helper.conf DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}/dbus-1/system.d)
+install(FILES org.freedesktop.policyman.helper.xml DESTINATION ${CMAKE_INSTALL_DBUS_INTERFACESDIR} )
+install(FILES org.freedesktop.policyman.policy DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions/)
+dbus_add_activation_system_service(org.freedesktop.policyman.helper.service.in)
 

@@ -25,6 +25,7 @@ namespace PolicyMan.Controllers {
 		public AuthorizationTreeStore allow_any_authorization_tree_store { private set; get; default = new AuthorizationTreeStore(); }
 		public AuthorizationTreeStore allow_active_authorization_tree_store { private set; get; default = new AuthorizationTreeStore(); }
 		public AuthorizationTreeStore allow_inactive_authorization_tree_store { private set; get; default = new AuthorizationTreeStore(); }
+		public signal void authorizations_changed();
 		
 		public AuthorizationsController() {
 			init_bindings();
@@ -47,18 +48,21 @@ namespace PolicyMan.Controllers {
 		public void allow_any_authorization_selected(Authorization authorization) {
 			if (authorizations != null) {
 				authorizations.allow_any = authorization;
+				authorizations_changed();
 			}
 		}
 		
 		public void allow_active_authorization_selected(Authorization authorization) {
 			if (authorizations != null) {
 				authorizations.allow_active = authorization;
+				authorizations_changed();
 			}
 		}
 		
 		public void allow_inactive_authorization_selected(Authorization authorization) {
 			if (authorizations != null) {
 				authorizations.allow_inactive = authorization;
+				authorizations_changed();
 			}
 		}
 	}

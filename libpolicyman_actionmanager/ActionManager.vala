@@ -24,6 +24,7 @@ namespace PolicyMan {
 	public class ActionManager {
 		private IPolicyManHelper policy_man_helper = null;
 		private Gee.List<PolicyMan.Common.Action> actions = null;
+		private Gee.List<Authority> authorities = null;
 		
 		public bool load(out Gee.List<PolicyMan.Common.Action> actions) {
 			if (!init_policyman_helper()) {
@@ -53,10 +54,12 @@ namespace PolicyMan {
 			}
 			
 			// Attach accounts to the authorities
-			var authorities = container.get_authorities();
+			authorities = container.get_authorities();
 			if (authorities != null) {
 				attach_accounts_to_authorities(authorities);
 			}
+			
+			this.actions = actions;
 			
 			return true;
 		}
@@ -66,10 +69,14 @@ namespace PolicyMan {
 				return false;
 			}
 			
-			Variant[] action_variants = ISerializable.to_variant_array<PolicyMan.Common.Action>(actions);
+			
+			stdout.printf("Saving actions\n");
+			
+			var container = new Container(actions, authorities);
 			try {
-				policy_man_helper.set_actions(action_variants);
+				policy_man_helper.set_actions(container.to_variant());
 			} catch (IOError e) {
+				stdout.printf("Saving actions failed: " + e.message + "\n");
 				return false;
 			}
 			
@@ -123,8 +130,8 @@ namespace PolicyMan {
 			if (policy_man_helper == null) {
 				// Init authorization helper
 				try {
-					policy_man_helper = Bus.get_proxy_sync (BusType.SYSTEM, "org.gnome.policyman.helper",
-														"/org/gnome/policyman/helper");
+					policy_man_helper = Bus.get_proxy_sync (BusType.SYSTEM, "org.freedesktop.policyman.helper",
+														"/org/freedesktop/policyman/helper");
 
 				} catch (IOError e) {
 					stdout.printf("PolicyManHelper init failed\n");

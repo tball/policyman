@@ -27,6 +27,7 @@ namespace PolicyMan.Common {
 		public string icon_name { get; set; default = ""; }
 		public string description { get; set; default = ""; }
 		public string message { get; set; default = ""; }
+		public bool action_changed { get; set; default = false; }
 		public Gee.List<Authority> authorities { get; set; default = new ArrayList<Authority>(); }
 		public Authorizations authorizations { get; set; default = new Authorizations(); }
 
@@ -60,6 +61,7 @@ namespace PolicyMan.Common {
 				new Variant.string(icon_name),
 				new Variant.string(description),
 				new Variant.string(message),
+				new Variant.boolean(action_changed),
 				authorizations.to_variant(),
 			};
 			
@@ -77,7 +79,8 @@ namespace PolicyMan.Common {
 			icon_name = variant.get_child_value(3).get_string();
 			description = variant.get_child_value(4).get_string();
 			message = variant.get_child_value(5).get_string();
-			authorizations.from_variant(variant.get_child_value(6));
+			action_changed = variant.get_child_value(6).get_boolean();
+			authorizations.from_variant(variant.get_child_value(7));
 		}
 	}
 }

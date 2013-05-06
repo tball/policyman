@@ -18,9 +18,9 @@
  **/
 
 namespace PolicyMan.Common {
-	[DBus (name = "org.gnome.policyman.helper")]
+	[DBus (name = "org.freedesktop.policyman.helper")]
 	public interface IPolicyManHelper : Object {
 		public abstract Variant get_actions () throws IOError;
-		public abstract void set_actions (Variant[] action_variants) throws IOError;
+		public abstract void set_actions (Variant container_variant) throws IOError;
 	}
 }

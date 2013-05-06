@@ -23,6 +23,7 @@ namespace PolicyMan.Controllers {
 	public class ActionManagerController : Object, IController {
 		public ActionsTreeStore actions_tree_store { private set; get; default = new ActionsTreeStore(); }
 		public ActionController selected_action_controller { private set; get; default = new ActionController(); }
+		private ActionManager action_manager;
 		
 		public ActionManagerController() {
 			init_bindings();
@@ -34,7 +35,7 @@ namespace PolicyMan.Controllers {
 		}
 		
 		private void init() {
-			var action_manager = new ActionManager();
+			action_manager = new ActionManager();
 			Gee.List<PolicyMan.Common.Action> actions;
 			if (!action_manager.load(out actions)) {
 				return;
@@ -44,7 +45,9 @@ namespace PolicyMan.Controllers {
 		}
 		
 		public void save_changes() {
-			stdout.printf("Saving changes\n");
+			if (!action_manager.save()) {
+				stdout.printf("Saving actions failed\n");
+			}
 		}
 		
 		public void close() {
