@@ -24,6 +24,7 @@ using PolicyMan.Controllers;
 namespace PolicyMan.Views {
 	public class AuthorityView : Window, IBaseView {
 		private AuthorizationsView authorizations_view;
+		private SelectableActionTreeView selectable_action_tree_view;
 		private AccountsView accounts_view;
 		private Button save_changes_button;
 		private Button cancel_changes_button;
@@ -45,6 +46,7 @@ namespace PolicyMan.Views {
 			var horizontal_box = new Box(Orientation.HORIZONTAL, 4);
 			var title_label = new Label(null);
 			var action_authentication_label = new Label(null);
+			selectable_action_tree_view = new SelectableActionTreeView();
 			accounts_view = new AccountsView();
 			
 			authorizations_view = new AuthorizationsView();
@@ -68,6 +70,7 @@ namespace PolicyMan.Views {
 			vertical_box.pack_start(action_authentication_label, false);
 			vertical_box.pack_start(authorizations_view, false);
 			vertical_box.pack_start(accounts_view, false);
+			vertical_box.pack_start(selectable_action_tree_view, false);
 			vertical_box.pack_start(horizontal_box, false);
 			
 			this.add(vertical_box);
@@ -79,6 +82,7 @@ namespace PolicyMan.Views {
 			
 			authorizations_view.connect_model(authority_controller.authorizations_controller);
 			accounts_view.connect_model(authority_controller.accounts_tree_store);
+			selectable_action_tree_view.connect_model(authority_controller.actions_tree_store);
 			save_authority.connect(authority_controller.save_changes);
 		}
 	}

@@ -24,7 +24,7 @@ namespace PolicyMan.Controllers {
 		private Authority authority = null;
 		
 		public signal void authority_changed(Authority authority);
-		public ActionsTreeStore actions_tree_store { get; private set; default = new ActionsTreeStore(); }
+		public SelectableActionsTreeStore actions_tree_store { get; private set; default = new SelectableActionsTreeStore(); }
 		public AuthorizationsController authorizations_controller { get; private set; default = new AuthorizationsController(); }
 		public AccountsTreeStore accounts_tree_store { get; private set; default = new AccountsTreeStore(); }
 		public string title { get; set; default = ""; }
@@ -35,7 +35,8 @@ namespace PolicyMan.Controllers {
 		}
 		
 		private void init_bindings() {
-			
+			actions_tree_store.selectable_action_selected.connect(add_action);
+			actions_tree_store.selectable_action_deselected.connect(remove_action);
 		}
 		
 		public void set_authority(Authority ?authority) {
@@ -48,7 +49,7 @@ namespace PolicyMan.Controllers {
 			file_path = authority.file_path;
 			
 			authorizations_controller.set_authorizations(authority.authorizations);
-			actions_tree_store.set_actions(authority.actions);
+			actions_tree_store.set_selected_actions(authority.actions);
 			accounts_tree_store.set_accounts(authority.accounts);
 		}
 		
@@ -61,7 +62,29 @@ namespace PolicyMan.Controllers {
 				authority.accounts.add(account);
 			}
 			
+			// Save selected actions
+			
 			authority_changed(authority);
+		}
+		
+		public void set_selectable_actions(Gee.List<PolicyMan.Common.Action> ?actions) {
+			actions_tree_store.set_actions(actions);
+		}
+		
+		public void add_action(PolicyMan.Common.Action action) {
+			if (authority == null) {
+				return;
+			}
+			
+			authority.actions.add(action);
+		}
+		
+		public void remove_action(PolicyMan.Common.Action action) {
+			if (authority == null) {
+				return;
+			}
+			
+			authority.actions.remove(action);
 		}
 	}
 }

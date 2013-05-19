@@ -32,6 +32,8 @@
 			GROUP_ID,
 			DESCRIPTION,
 			ACTION_REF,
+			IS_ACTION,
+			SELECTED
 		}
 		
 		public TreeModelFilter tree_store_filter { get; private set; }
@@ -39,7 +41,7 @@
 		public ActionsTreeStore() {
 			tree_store_filter = new TreeModelFilter(this, null);
 			tree_store_filter.set_visible_func(visibility_func);
-			set_column_types(new Type[] {typeof(string), typeof (string), typeof (string), typeof(PolicyMan.Common.Action)});
+			set_column_types(new Type[] {typeof(string), typeof (string), typeof (string), typeof(PolicyMan.Common.Action), typeof(bool), typeof(bool)});
 			
 			// Create bindings
 			this.notify["search-string"].connect((sender) => { tree_store_filter.refilter();});
@@ -158,7 +160,7 @@
 				TreeIter child_iter;
 				
 				append(out child_iter, parent);
-				set(child_iter, ColumnTypes.ICON, "channel-secure-symbolic", ColumnTypes.GROUP_ID, action.description, ColumnTypes.ACTION_REF, action, -1);
+				set(child_iter, ColumnTypes.ICON, "channel-secure-symbolic", ColumnTypes.GROUP_ID, action.description, ColumnTypes.ACTION_REF, action, ColumnTypes.IS_ACTION, true,-1);
 				
 				return;
 			}

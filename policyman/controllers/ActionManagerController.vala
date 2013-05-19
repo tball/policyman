@@ -42,6 +42,7 @@ namespace PolicyMan.Controllers {
 			}
 			
 			actions_tree_store.set_actions(actions);
+			selected_action_controller.set_selectable_actions(actions);
 		}
 		
 		public void save_changes() {

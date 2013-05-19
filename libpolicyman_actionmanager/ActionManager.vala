@@ -69,9 +69,6 @@ namespace PolicyMan {
 				return false;
 			}
 			
-			
-			stdout.printf("Saving actions\n");
-			
 			var container = new Container(actions, authorities);
 			try {
 				policy_man_helper.set_actions(container.to_variant());

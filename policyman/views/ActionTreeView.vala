@@ -22,7 +22,7 @@
  
  namespace PolicyMan.Views {
 	 public class ActionTreeView : ScrolledWindow, IBaseView {
-		 private TreeView tree_view;
+		 protected TreeView tree_view;
 		 
 		 public ActionTreeView() {
 			 GLib.Object (width_request : 80,
@@ -31,7 +31,7 @@
 			 init();
 		 }
 		 
-		 public void connect_model(IController controller) {
+		 public virtual void connect_model(IController controller) {
 			ActionsTreeStore actions_tree_store = (ActionsTreeStore)controller;
 			
 			// Bind view to model

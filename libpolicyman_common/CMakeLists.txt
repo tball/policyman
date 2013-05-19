@@ -20,6 +20,7 @@ Authorization.vala
 Container.vala
 ISerializable.vala
 ActionHelperInterface.vala
+ObservableList.vala
 
 PACKAGES
 gee-1.0

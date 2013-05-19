@@ -16,6 +16,7 @@ controllers/ActionController.vala
 controllers/ActionManagerController.vala
 controllers/ActionMembersTreeStore.vala
 controllers/ActionsTreeStore.vala
+controllers/SelectableActionsTreeStore.vala
 controllers/AuthoritiesTreeStore.vala
 controllers/AuthorityController.vala
 controllers/AuthorizationsController.vala
@@ -31,6 +32,7 @@ views/AuthorizationsView.vala
 views/AuthoritiesTreeView.vala
 views/AuthorityView.vala
 views/AccountsView.vala
+views/SelectableActionTreeView.vala
 
 
 PACKAGES

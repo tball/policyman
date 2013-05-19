@@ -57,5 +57,9 @@ namespace PolicyMan.Controllers {
 			authorities_tree_store.set_authorities(action.authorities);
 			action_selected = true;
 		}
+		
+		public void set_selectable_actions(Gee.List<PolicyMan.Common.Action> ?actions) {
+			authorities_tree_store.set_selectable_actions(actions);
+		}
 	}
 }

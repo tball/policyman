@@ -132,6 +132,10 @@ namespace PolicyMan.Controllers {
 			}
 		}
 		
+		public void set_selectable_actions(Gee.List<PolicyMan.Common.Action> ?actions) {
+			added_or_edited_authority_controller.set_selectable_actions(actions);
+		}
+		
 		private void set_tree_iter_data(TreeIter tree_iter, Authority authority) {
 			set(tree_iter, ColumnTypes.TITLE, "<b>" + authority.title + "</b>, " + "(Allow any: " + authority.authorizations.allow_any.to_string() + ", Allow active: " + authority.authorizations.allow_active.to_string() + ", Allow inactive: " + authority.authorizations.allow_inactive.to_string() + ")", ColumnTypes.OBJECT, authority, -1);
 		}
