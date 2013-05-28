@@ -28,6 +28,8 @@ namespace PolicyMan.Common {
 		public Container(Gee.List<Action> ?actions, Gee.List<Authority> ?authorities) {
 			this.actions = actions;
 			this.authorities = authorities;
+			attach_actions_to_authorities();
+			generate_actions_strings_for_authorities(authorities);
 		}
 		
 		public Gee.List<Action> ?get_actions() {
@@ -46,6 +48,27 @@ namespace PolicyMan.Common {
 			attach_actions_to_authorities();
 			
 			return authorities;
+		}
+		
+		private void generate_actions_strings_for_authorities(Gee.List<Authority> ?authorities) {
+			if (authorities == null) {
+				return;
+			}
+
+			foreach (var authority in authorities) {
+				var action_string = "";
+				if (authority.actions == null) {
+					continue;
+				}
+				if (authority.actions.size <= 0) {
+					continue;
+				}
+				for (var index = 0; index < authority.actions.size - 1; index++) {
+					var action = authority.actions[index];
+					action_string += action.id + ";";
+				}
+				action_string += authority.actions.last().id;
+			}
 		}
 		
 		private void attach_actions_to_authorities() {

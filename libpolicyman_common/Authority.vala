@@ -28,7 +28,6 @@ namespace PolicyMan.Common {
 		public string accounts_string { get; set; default = ""; }
 		public Gee.List<Account> accounts { get; set; default = new ObservableList<Account>(); }
 		
-		
 		private Gee.List<PolicyMan.Common.Action> priv_actions;
 		public Gee.List<PolicyMan.Common.Action> actions { 
 			get {
