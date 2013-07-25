@@ -53,10 +53,13 @@
 			
 			var pixbuf_cell_rendere = new CellRendererPixbuf();
 			var text_cell_rendere = new CellRendererText();
-			var tree_view_column = new TreeViewColumn();
+			var tree_view_column = new TreeViewColumn() {
+				sizing = TreeViewColumnSizing.GROW_ONLY,
+				expand = true
+			};
 			
 			tree_view_column.pack_start(pixbuf_cell_rendere, false);
-			tree_view_column.pack_start(text_cell_rendere, false);
+			tree_view_column.pack_start(text_cell_rendere, true);
 			tree_view_column.set_attributes(pixbuf_cell_rendere, "icon_name", 0, null);
 			tree_view_column.set_attributes(text_cell_rendere, "text", 1, null);
 			tree_view_column.title = "Actions";

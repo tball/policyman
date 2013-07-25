@@ -38,6 +38,8 @@ namespace PolicyMan.Views {
 			var horizontal_box = new Box(Orientation.HORIZONTAL, 4);
 			var title_label = new Label(null);
 			var action_authentication_label = new Label(null);
+			var selected_accounts_label = new Label(null);
+			var selected_actions_label = new Label(null);
 			selectable_action_tree_view = new SelectableActionTreeView();
 			accounts_view = new AccountsView();
 			
@@ -48,12 +50,18 @@ namespace PolicyMan.Views {
 			title_label.set_markup("<b>Title</b>");
 			action_authentication_label.halign = Align.START;
 			action_authentication_label.set_markup("<b>Authentication</b>");
+			selected_actions_label.halign = Align.START;
+			selected_actions_label.set_markup("<b>Selected Actions</b>");
+			selected_accounts_label.halign = Align.START;
+			selected_accounts_label.set_markup("<b>Selected Accounts</b>");
 
 			vertical_box.pack_start(title_label, false);
 			vertical_box.pack_start(action_title_entry, false);
 			vertical_box.pack_start(action_authentication_label, false);
 			vertical_box.pack_start(authorizations_view, false);
+			vertical_box.pack_start(selected_accounts_label, false);
 			vertical_box.pack_start(accounts_view, false);
+			vertical_box.pack_start(selected_actions_label, false);
 			vertical_box.pack_start(selectable_action_tree_view, false);
 			vertical_box.pack_start(horizontal_box, false);
 			

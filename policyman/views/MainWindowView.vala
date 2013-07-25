@@ -44,7 +44,7 @@ namespace PolicyMan.Views {
 		protected void init() {
 			horizontal_box = new Box(Orientation.HORIZONTAL, 4);
 			vertical_box = new Box(Orientation.VERTICAL, 4);
-			var vertical_tree_view_box = new Box(Orientation.VERTICAL, 4);
+			var vertical_tree_view_box = new Box(Orientation.VERTICAL, 4) { margin = 10 };
 			//action_tree_view = new ActionTreeView();
 			//action_view = new ActionView();
 			top_toolbar_view = new TopToolbarView();
@@ -54,15 +54,21 @@ namespace PolicyMan.Views {
 			var authority_toolbar = new Toolbar();
 			var add_authority_rule_button = new ToolButton(null, null);
 			var delete_authority_button = new ToolButton(null, null);
+			var selected_actions_label = new Label(null);
+			selected_actions_label.halign = Align.START;
+			selected_actions_label.set_markup("<b>Authorities</b>");
 			add_authority_rule_button.clicked.connect((object) => { add_authority_clicked(); });
 			add_authority_rule_button.icon_name = "list-add-symbolic";
+			add_authority_rule_button.tooltip_text = "Add Authority";
 			delete_authority_button.clicked.connect((object) => { var tree_iter = authorities_tree_view.get_selected_tree_iter(); delete_authority_clicked(tree_iter); });
 			delete_authority_button.icon_name = "list-remove-symbolic";
+			delete_authority_button.tooltip_text = "Delete Selected Authority";
 			authority_toolbar.insert(add_authority_rule_button, 0);
 			authority_toolbar.insert(delete_authority_button, 1);
 			
 			//horizontal_box.pack_start(action_tree_view);
 			//horizontal_box.pack_start(action_view);
+			vertical_tree_view_box.pack_start(selected_actions_label, false);
 			vertical_tree_view_box.pack_start(authorities_tree_view);
 			vertical_tree_view_box.pack_start(authority_toolbar, false);
 			horizontal_box.pack_start(vertical_tree_view_box);

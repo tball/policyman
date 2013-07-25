@@ -25,8 +25,7 @@
 		 private CellRendererToggle toggle_cell_rendere = new CellRendererToggle();
 		 public SelectableActionTreeView() {
 			 GLib.Object (width_request : 80,
-						  shadow_type : ShadowType.IN,
-						  margin : 10);
+						  shadow_type : ShadowType.IN);
 			 base.init();
 			 init();
 		 }
@@ -44,7 +43,10 @@
 		}
 		
 		private new void init() {
-			var checkbox_column = new TreeViewColumn();
+			var checkbox_column = new TreeViewColumn() {
+				sizing = TreeViewColumnSizing.AUTOSIZE,
+				expand = false
+			};
 			checkbox_column.title = "Selected";
 			
 			toggle_cell_rendere = new CellRendererToggle();
