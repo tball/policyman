@@ -37,7 +37,7 @@
 				return;
 			}
 			
-			toggle_cell_rendere.toggled.connect(actions_tree_store.tree_path_toggled);
+			toggle_cell_rendere.toggled.connect(actions_tree_store.toggle_selection_on_tree_path_string);
 			
 			// Connect base model
 			base.connect_model(actions_tree_store);
@@ -49,7 +49,7 @@
 			
 			toggle_cell_rendere = new CellRendererToggle();
 			checkbox_column.pack_start(toggle_cell_rendere, false);
-			checkbox_column.set_attributes(toggle_cell_rendere, "activatable", ActionsTreeStore.ColumnTypes.IS_ACTION, "active", ActionsTreeStore.ColumnTypes.SELECTED, null);
+			checkbox_column.set_attributes(toggle_cell_rendere, "inconsistent", SelectableActionsTreeStore.SelectableColumnTypes.INCONSISTENT, "active", SelectableActionsTreeStore.SelectableColumnTypes.SELECTED, null);
 			tree_view.append_column(checkbox_column);
 		}
 	}

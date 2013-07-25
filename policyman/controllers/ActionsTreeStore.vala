@@ -24,6 +24,7 @@
  namespace PolicyMan.Controllers {
 	 public class ActionsTreeStore : TreeStore, IController {
 		private ActionManagerController action_manager_controller { get; private set; }
+		protected Map<string, TreePath> action_id_to_tree_path_hash_map { get; private set; }
 		public signal void action_selected(PolicyMan.Common.Action action);
 		public string search_string {get; set; default="";}
 		
@@ -33,8 +34,7 @@
 			GROUP_ID,
 			DESCRIPTION,
 			ACTION_REF,
-			IS_ACTION,
-			SELECTED
+			NUM_ACTION_CHILDREN
 		}
 		
 		public TreeModelFilter tree_store_filter { get; private set; }
@@ -48,7 +48,7 @@
 			
 			tree_store_filter = new TreeModelFilter(this, null);
 			tree_store_filter.set_visible_func(visibility_func);
-			set_column_types(new Type[] {typeof(string), typeof (string), typeof (string), typeof(PolicyMan.Common.Action), typeof(bool), typeof(bool)});
+			set_column_types(new Type[] {typeof(string), typeof (string), typeof (string), typeof(PolicyMan.Common.Action), typeof(int)});
 			
 			init_bindings();
 		}
@@ -137,6 +137,7 @@
 
 		public void set_actions(Gee.List<PolicyMan.Common.Action> ?actions) {
 			clear();
+			action_id_to_tree_path_hash_map = new HashMap<string, TreePath>();
 			
 			if (actions == null) {
 				return;
@@ -175,7 +176,11 @@
 				TreeIter child_iter;
 				
 				append(out child_iter, parent);
-				set(child_iter, ColumnTypes.ICON, "channel-secure-symbolic", ColumnTypes.GROUP_ID, action.description, ColumnTypes.ACTION_REF, action, ColumnTypes.IS_ACTION, true,-1);
+				set(child_iter, ColumnTypes.ICON, "channel-secure-symbolic", ColumnTypes.GROUP_ID, action.description, ColumnTypes.ACTION_REF, action,-1);
+				
+				// Register tree path for this action id
+				var tree_path = get_path(child_iter);
+				action_id_to_tree_path_hash_map.set(action.id, tree_path);
 				
 				return;
 			}
@@ -210,7 +215,16 @@
 			}
 			
 			set(child_iter, ColumnTypes.ICON, "folder-symbolic", ColumnTypes.GROUP_ID, action_ids[level], -1);
+			increment_action_child_count(child_iter);
 			insert_or_update(action_ids, action, child_iter, level + 1);
+		}
+		
+		private void increment_action_child_count(TreeIter tree_iter) {
+			Value child_count_value;
+			get_value(tree_iter, ColumnTypes.NUM_ACTION_CHILDREN, out child_count_value);
+			var child_count = child_count_value.get_int();
+			child_count++;
+			set_value(tree_iter, ColumnTypes.NUM_ACTION_CHILDREN, child_count);
 		}
 		
 		public void search_string_changed(string search_string) {
