@@ -45,10 +45,18 @@ namespace PolicyMan.Controllers {
 		}
 		
 		public void delete_authority_clicked(TreeIter ?tree_iter) {
+			if (tree_iter == null) {
+				return;
+			}
+			
 			// Get the deleted authority
 			Value authority_value;
 			authorities_tree_store.get_value(tree_iter, AuthoritiesTreeStore.ColumnTypes.OBJECT, out authority_value);
 			var deleted_authority = authority_value.get_object() as PolicyMan.Common.Authority;
+			
+			if (deleted_authority == null) {
+				return;
+			}
 			
 			action_manager_controller.delete_authority(deleted_authority);
 		}

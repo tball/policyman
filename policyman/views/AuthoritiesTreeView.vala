@@ -56,10 +56,12 @@ namespace PolicyMan.Views {
 			tree_iter_edited(tree_iter);
 		}
 		
-		public TreeIter get_selected_tree_iter() {
+		public TreeIter ?get_selected_tree_iter() {
 			TreeModel tree_model;
 			TreeIter tree_iter;
-			tree_view.get_selection().get_selected(out tree_model, out tree_iter);
+			if (!tree_view.get_selection().get_selected(out tree_model, out tree_iter)) {
+				return null;
+			}
 			return tree_iter;
 		}
 				
@@ -70,7 +72,7 @@ namespace PolicyMan.Views {
 			}
 			
 			// Bind view to model
-			tree_view.set_model(authorities_tree_store);
+			tree_view.set_model(authorities_tree_store.tree_store_filter);
 			
 			// Bind model to events from view
 			tree_view.get_selection().changed.connect((sender) => {

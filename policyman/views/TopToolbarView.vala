@@ -67,7 +67,7 @@ namespace PolicyMan.Views {
 			var main_window_controller = controller as MainWindowController;
 			
 			// Bind to the model properties
-			//search_string_changed.connect(actions_tree_store.search_string_changed);
+			search_string_changed.connect(main_window_controller.authorities_tree_store.on_search_string_changed);
 			save_changes_button_clicked.connect(main_window_controller.on_save_changes);
 		}
 	}

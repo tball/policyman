@@ -33,19 +33,45 @@ namespace PolicyMan.Controllers {
 		}
 		
 		public signal void authority_selected(PolicyMan.Common.Authority authority);
+		public TreeModelFilter tree_store_filter { get; private set; }
 
 		private ActionManagerController action_manager_controller { get; private set; }
+		private string search_string = "";
 
 		public AuthoritiesTreeStore(ActionManagerController action_manager_controller) {
 			this.action_manager_controller = action_manager_controller;
 
 			set_column_types(new Type[] {typeof(string), typeof(Authority)});
 			
+			tree_store_filter = new TreeModelFilter(this, null);
+			tree_store_filter.set_visible_func(visibility_func);
+			
 			init_bindings();
+		}
+		
+		private bool visibility_func(TreeModel model, TreeIter iter) {
+			if (search_string == "") {
+				// Search aborted
+				return true;	
+			}
+			
+			var lower_case_filter_string = search_string.down();
+			
+			// Get current title
+			Value authority_title_value;
+			model.get_value(iter, ColumnTypes.TITLE, out authority_title_value);
+			var authority_title = authority_title_value.get_string().down();
+			
+			return authority_title.contains(lower_case_filter_string);
 		}
 		
 		private void init_bindings() {
 			action_manager_controller.authority_changed.connect(on_authority_changed);
+		}
+		
+		public void on_search_string_changed(string search_string) {
+			this.search_string = search_string;
+			tree_store_filter.refilter();
 		}
 
 		public void on_authority_changed(Authority authority) {
@@ -94,7 +120,7 @@ namespace PolicyMan.Controllers {
 		public void select_authority_tree_iter(TreeIter tree_iter) {
 			// Get the selected authority
 			Value authority_value;
-			this.get_value(tree_iter, AuthoritiesTreeStore.ColumnTypes.OBJECT, out authority_value);
+			tree_store_filter.get_value(tree_iter, AuthoritiesTreeStore.ColumnTypes.OBJECT, out authority_value);
 			var selected_authority = authority_value.get_object() as PolicyMan.Common.Authority;
 
 			authority_selected(selected_authority);
