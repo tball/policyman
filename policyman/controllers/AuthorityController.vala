@@ -23,48 +23,52 @@ namespace PolicyMan.Controllers {
 	public class AuthorityController : Object, IController {
 		private Authority authority = null;
 		
-		public signal void authority_changed(Authority authority);
-		public SelectableActionsTreeStore actions_tree_store { get; private set; default = new SelectableActionsTreeStore(); }
+		private ActionManagerController action_manager_controller { get; private set; }
+		private Binding title_binding { get; private set; }
+		public SelectableActionsTreeStore actions_tree_store { get; private set; }
 		public AuthorizationsController authorizations_controller { get; private set; default = new AuthorizationsController(); }
 		public AccountsTreeStore accounts_tree_store { get; private set; default = new AccountsTreeStore(); }
 		public string title { get; set; default = ""; }
 		public string file_path { get; set; default = ""; }
 		
-		public AuthorityController() {
+		public AuthorityController(ActionManagerController action_manager_controller) {
+			this.action_manager_controller = action_manager_controller;
+			this.actions_tree_store = new SelectableActionsTreeStore(action_manager_controller); 
 			init_bindings();
 		}
 		
 		private void init_bindings() {
 			actions_tree_store.selectable_action_selected.connect(add_action);
 			actions_tree_store.selectable_action_deselected.connect(remove_action);
+			
+			// Init authority changed bindings
+			this.notify["title"].connect((object, param) => { 
+				authority.title = title;
+				authority_updated(); 
+			});
+			accounts_tree_store.selected_accounts_changed.connect((object) => { 
+				authority_updated();
+			});
 		}
-		
+
 		public void set_authority(Authority ?authority) {
+			// Disconnect old property bindings
+			if (title_binding != null) {
+				title_binding.dispose();
+				title_binding = null;
+			}
+			
 			this.authority = authority;
 			if (authority == null) {
 				return;
 			}
-			
+
 			title = authority.title;
 			file_path = authority.file_path;
 			
 			authorizations_controller.set_authorizations(authority.authorizations);
 			actions_tree_store.set_selected_actions(authority.actions);
 			accounts_tree_store.set_accounts(authority.accounts);
-		}
-		
-		public void save_changes() {
-			authority.title = title;
-			
-			// Save accounts
-			authority.accounts.clear();
-			foreach(var account in accounts_tree_store.selected_accounts) {
-				authority.accounts.add(account);
-			}
-			
-			// Save selected actions
-			
-			authority_changed(authority);
 		}
 		
 		public void set_selectable_actions(Gee.List<PolicyMan.Common.Action> ?actions) {
@@ -76,7 +80,7 @@ namespace PolicyMan.Controllers {
 				return;
 			}
 			
-			authority.actions.add(action);
+			action_manager_controller.add_action_to_authority(authority, action);
 		}
 		
 		public void remove_action(PolicyMan.Common.Action action) {
@@ -84,7 +88,11 @@ namespace PolicyMan.Controllers {
 				return;
 			}
 			
-			authority.actions.remove(action);
+			action_manager_controller.remove_action_from_authority(authority, action);
+		}
+		
+		public void authority_updated() {
+			action_manager_controller.force_authority_update(authority);
 		}
 	}
 }

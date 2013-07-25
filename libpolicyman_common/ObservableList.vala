@@ -38,7 +38,8 @@ namespace PolicyMan.Common {
 		
 		public override void clear() {
 			Gee.List<T> list = this;
-			foreach (var object in list) {
+			while(list.size > 0) {
+				var object = get(0);
 				remove(object);
 			}
 		}

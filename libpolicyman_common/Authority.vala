@@ -27,40 +27,7 @@ namespace PolicyMan.Common {
 		public string actions_string { get; set; default = ""; }
 		public string accounts_string { get; set; default = ""; }
 		public Gee.List<Account> accounts { get; set; default = new ObservableList<Account>(); }
-		
-		private Gee.List<PolicyMan.Common.Action> priv_actions;
-		public Gee.List<PolicyMan.Common.Action> actions { 
-			get {
-				if (priv_actions == null) {
-					actions = new ObservableList<Action>(); 
-				}
-				
-				return priv_actions;
-			}
-			set {
-				if (priv_actions != null) {
-					(priv_actions as ObservableList<PolicyMan.Common.Action>).object_added.disconnect(action_added);
-					(priv_actions as ObservableList<PolicyMan.Common.Action>).object_removed.disconnect(action_removed);
-				}
-				
-				priv_actions = value;
-				(priv_actions as ObservableList<PolicyMan.Common.Action>).object_added.connect(action_added);
-				(priv_actions as ObservableList<PolicyMan.Common.Action>).object_removed.connect(action_removed);
-			}
-		}
-		
-		private void action_added(PolicyMan.Common.Action action) {
-			// Add the authority to the action
-			if (!action.authorities.contains(this)) {
-				action.authorities.add(this);
-			}
-		}
-		
-		private void action_removed(PolicyMan.Common.Action action) {
-			if (action.authorities.contains(this)) {
-				action.authorities.remove(this);
-			}
-		}
+		public Gee.List<PolicyMan.Common.Action> actions { get; set; default = new ObservableList<PolicyMan.Common.Action>(); }
 		
 		public Variant to_variant() {		
 			var variant_arr = new Variant[] {

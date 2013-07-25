@@ -50,7 +50,7 @@ namespace PolicyMan {
 			// Fetch authorities
 			var authorities = get_authorities();
 
-			// Convert action to our own format
+			// Convert actions to our own format
 			var actions = new ArrayList<PolicyMan.Common.Action>();
 			for (var i = 0; i < action_descriptors.length(); i++) {
 				var action_desc = action_descriptors.nth_data(i);
@@ -63,6 +63,7 @@ namespace PolicyMan {
 			
 			// Create container, which we will send to our client
 			var container = new Container(actions, authorities);
+			container.attach_actions_to_authorities();
 			
 			return container.to_variant();
 		}
@@ -167,7 +168,7 @@ namespace PolicyMan {
 			}
 		}
 		
-		private string get_string_from_authorization(Authorization authorization) {
+		private static string get_string_from_authorization(Authorization authorization) {
 			switch(authorization) {
 				case Authorization.NOT_AUTHORIZED:
 					return "no";
@@ -241,8 +242,9 @@ namespace PolicyMan {
 				}
 			}
 			
-			// Remove authority paths if exists
-			foreach (var authority in authorities) {
+			// Remove any existing authorities
+			var existing_authorities = get_authorities();
+			foreach (var authority in existing_authorities) {
 				if (authority.file_path == "") {
 					continue;
 				}
@@ -252,9 +254,7 @@ namespace PolicyMan {
 				}
 			}
 			
-			stdout.printf("Authorities: %d\n", authorities.size);
-			
-			// Save the authorities
+			// Save the new authorities
 			foreach (var authority in authorities) {
 				save_authority(authority);
 			}
@@ -419,23 +419,29 @@ namespace PolicyMan {
 			// Generate a new file name
 			if (authority_file_path == "") {
 				var authority_directory_path = Ressources.AUTHORITY_ETC_DIR + "/60-policyman.d";
-				if (DirUtils.create(authority_directory_path, 751) != 0) {
-					stdout.printf("Unable to create dir %s\n", authority_directory_path);
-					return;
-				}
-				else {
-					stdout.printf("Dir created successfully: %s\n", authority_directory_path);
+				if (DirUtils.create(authority_directory_path, 0751) != 0) {
+					// Means its already created
 				}
 				
 				var authority_file_name = get_filename_from_authority(authority);
+				authority_file_path = authority_directory_path + "/" + authority_file_name;
 			}
-			else {
-				stdout.printf("Not saving authority: %s\n", authority.title);
+			var authority_string = format_authority(authority);
+			stdout.printf("Saving authority: %s\nAt: %s\n", authority_string, authority_file_path);
+			
+			// Save the actual authority
+			var file = File.new_for_path(authority_file_path);
+			try {
+				// Append data
+				var os = file.append_to(FileCreateFlags.NONE);
+				os.write(authority_string.data);
+			} catch (GLib.Error e) {
+				stdout.printf ("Error: %s\n", e.message);
 			}
 		}
 		
 		private static string get_filename_from_authority(PolicyMan.Common.Authority authority) {
-			return authority.title.replace(" ", "_").replace("/", "_").replace("\0", "_");
+			return authority.title.replace(" ", "_").replace("/", "_").replace("\0", "_") + ".pkla";
 		}
 		
 		private static string format_authority(PolicyMan.Common.Authority authority) {
@@ -443,9 +449,9 @@ namespace PolicyMan {
 			retstring += "[" + authority.title + "]\n";
 			retstring += "Identity=" + authority.accounts_string + "\n";
 			retstring += "Action=" + authority.actions_string + "\n";
-			retstring += "ResultAny=" + authority.authorizations.allow_any.to_string() + "\n";
-			retstring += "ResultInactive=" + authority.authorizations.allow_inactive.to_string() + "\n";
-			retstring += "ResultActive=" + authority.authorizations.allow_active.to_string() + "\n";
+			retstring += "ResultAny=" + get_string_from_authorization(authority.authorizations.allow_any) + "\n";
+			retstring += "ResultInactive=" + get_string_from_authorization(authority.authorizations.allow_inactive) + "\n";
+			retstring += "ResultActive=" + get_string_from_authorization(authority.authorizations.allow_active) + "\n";
 			return retstring;
 		}
 		

@@ -26,7 +26,7 @@ namespace PolicyMan.Views {
 		private ToolButton save_tool_button;
 		
 		public signal void search_string_changed(string search_string);
-		public signal void save_change_button_clicked();
+		public signal void save_changes_button_clicked();
 		
 		public TopToolbarView() {
 			GLib.Object (hexpand : true,
@@ -42,7 +42,7 @@ namespace PolicyMan.Views {
 			save_tool_button = new ToolButton(null, null) { expand = false, margin = 4 };
 			
 			search_entry.changed.connect((sender) => { search_string_changed(search_entry.text); });
-			save_tool_button.clicked.connect((sender) => { save_change_button_clicked(); });
+			save_tool_button.clicked.connect((sender) => { save_changes_button_clicked(); });
 			search_entry.secondary_icon_name = "edit-find-symbolic";
 			//save_tool_button.height_request = 35;
 			//save_tool_button.width_request = 35;
@@ -64,11 +64,11 @@ namespace PolicyMan.Views {
 		}
 		
 		public void connect_model(IController controller) {
-			ActionManagerController action_manager_controller = (ActionManagerController)controller;
+			var main_window_controller = controller as MainWindowController;
 			
 			// Bind to the model properties
-			search_string_changed.connect(action_manager_controller.actions_tree_store.search_string_changed);
-			save_change_button_clicked.connect(action_manager_controller.save_changes);
+			//search_string_changed.connect(actions_tree_store.search_string_changed);
+			save_changes_button_clicked.connect(main_window_controller.on_save_changes);
 		}
 	}
 }

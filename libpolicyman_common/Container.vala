@@ -28,8 +28,6 @@ namespace PolicyMan.Common {
 		public Container(Gee.List<Action> ?actions, Gee.List<Authority> ?authorities) {
 			this.actions = actions;
 			this.authorities = authorities;
-			attach_actions_to_authorities();
-			generate_actions_strings_for_authorities(authorities);
 		}
 		
 		public Gee.List<Action> ?get_actions() {
@@ -50,28 +48,27 @@ namespace PolicyMan.Common {
 			return authorities;
 		}
 		
-		private void generate_actions_strings_for_authorities(Gee.List<Authority> ?authorities) {
+		private void generate_actions_strings_for_authorities() {
 			if (authorities == null) {
 				return;
 			}
 
 			foreach (var authority in authorities) {
-				var action_string = "";
+				authority.actions_string = "";
 				if (authority.actions == null) {
 					continue;
 				}
 				if (authority.actions.size <= 0) {
 					continue;
 				}
-				for (var index = 0; index < authority.actions.size - 1; index++) {
+				for (var index = 0; index < authority.actions.size; index++) {
 					var action = authority.actions[index];
-					action_string += action.id + ";";
+					authority.actions_string += action.id + ";";
 				}
-				action_string += authority.actions.last().id;
 			}
 		}
 		
-		private void attach_actions_to_authorities() {
+		public void attach_actions_to_authorities() {
 			if (authorities == null || actions == null || actions_attached_to_authorities) {
 				return;
 			}
@@ -81,7 +78,6 @@ namespace PolicyMan.Common {
 				foreach(var action in actions) {
 					// TODO: Create smarter parsing of the actions_string (including wildcards etc.)
 					if (authority.actions_string.contains(action.id)) {
-						action.authorities.add(authority);
 						authority.actions.add(action);
 					}
 				}
@@ -91,6 +87,7 @@ namespace PolicyMan.Common {
 		}
 		
 		public Variant to_variant() {
+			generate_actions_strings_for_authorities();
 			var action_variant_array = ISerializable.to_variant_array<Action>(actions);
 			var authority_variant_array = ISerializable.to_variant_array<Authority>(authorities);
 			
@@ -102,6 +99,7 @@ namespace PolicyMan.Common {
 			var authority_variant_array = variant.get_child_value(1) as Variant[];
 			actions = ISerializable.to_object_list<Action>(action_variant_array);
 			authorities = ISerializable.to_object_list<Authority>(authority_variant_array);
+			attach_actions_to_authorities();
 		}
 	}
 }

@@ -21,6 +21,7 @@ controllers/AuthoritiesTreeStore.vala
 controllers/AuthorityController.vala
 controllers/AuthorizationsController.vala
 controllers/AuthorizationTreeStore.vala
+controllers/MainWindowController.vala
 
 # Views
 views/IBaseView.vala

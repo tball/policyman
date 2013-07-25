@@ -50,6 +50,7 @@
 		protected void init() {
 			this.expand = true;
 			
+			
 			var pixbuf_cell_rendere = new CellRendererPixbuf();
 			var text_cell_rendere = new CellRendererText();
 			var tree_view_column = new TreeViewColumn();

@@ -49,6 +49,8 @@ namespace PolicyMan.Controllers {
 		public TreeStore group_account_tree_store = null;
 		public TreeStore account_types_tree_store = null;
 		
+		public signal void selected_accounts_changed();
+		
 		public class AccountsTreeStore() {
 			set_column_types(new Type[] {typeof(string), typeof(string), typeof(TreeModel), typeof(Account), typeof(int)});
 			init();
@@ -58,7 +60,6 @@ namespace PolicyMan.Controllers {
 			// Fetch all accounts
 			user_accounts = AccountUtilities.get_users();
 			group_accounts = AccountUtilities.get_groups();
-			selected_accounts = new ArrayList<Account>();
 			
 			// Init tree stores containing account types
 			account_types_tree_store = new TreeStore(2, typeof(string), typeof(int));
@@ -100,6 +101,7 @@ namespace PolicyMan.Controllers {
 			
 			// Remove it
 			selected_accounts.remove(account);
+			selected_accounts_changed();
 		}
 		
 		public void add_account() {
@@ -109,6 +111,7 @@ namespace PolicyMan.Controllers {
 			TreeIter tree_iter;
 			append(out tree_iter, null);
 			set_tree_iter_account(tree_iter, new_account, selected_accounts.size - 1);
+			selected_accounts_changed();
 		}
 		
 		public void account_name_changed(string tree_path_string, TreeIter tree_iter) {
@@ -169,7 +172,7 @@ namespace PolicyMan.Controllers {
 		}
 		
 		public void set_accounts(Gee.List<Account> accounts) {
-			selected_accounts.clear();
+			selected_accounts = accounts;	
 			clear();
 			
 			if (accounts == null) {
@@ -179,7 +182,6 @@ namespace PolicyMan.Controllers {
 			// Parse accounts			
 			var account_index = 0;
 			foreach (var account in accounts) {		
-				selected_accounts.add(account);	
 				TreeIter root;
 				append(out root, null);
 				set_tree_iter_account(root, account, account_index);

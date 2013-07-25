@@ -22,22 +22,14 @@ using Gee;
 using PolicyMan.Controllers;
 
 namespace PolicyMan.Views {
-	public class AuthorityView : Window, IBaseView {
+	public class AuthorityView : Box, IBaseView {
 		private AuthorizationsView authorizations_view;
 		private SelectableActionTreeView selectable_action_tree_view;
 		private AccountsView accounts_view;
-		private Button save_changes_button;
-		private Button cancel_changes_button;
 		private Entry action_title_entry;
-	
-		public signal void save_authority(); 
 
 		public AuthorityView() {
-			GLib.Object( modal : true,
-						 title : "Add / Edit Authority",
-						 window_position : WindowPosition.CENTER,
-						 height_request : 480,
-						 width_request : 640);
+			GLib.Object();
 			init();
 		}
 		
@@ -50,21 +42,13 @@ namespace PolicyMan.Views {
 			accounts_view = new AccountsView();
 			
 			authorizations_view = new AuthorizationsView();
-			save_changes_button = new Button.with_label("Save");
-			cancel_changes_button = new Button.with_label("Cancel");
 			action_title_entry = new Entry();
 
 			title_label.halign = Align.START;
 			title_label.set_markup("<b>Title</b>");
 			action_authentication_label.halign = Align.START;
 			action_authentication_label.set_markup("<b>Authentication</b>");
-			
-			delete_event.connect(hide_on_delete);
-			save_changes_button.clicked.connect((sender) => { save_authority(); set_visible(false); });
-			cancel_changes_button.clicked.connect((sender) => { set_visible(false); });
-			
-			horizontal_box.pack_start(save_changes_button, false);
-			horizontal_box.pack_start(cancel_changes_button, false);
+
 			vertical_box.pack_start(title_label, false);
 			vertical_box.pack_start(action_title_entry, false);
 			vertical_box.pack_start(action_authentication_label, false);
@@ -83,7 +67,6 @@ namespace PolicyMan.Views {
 			authorizations_view.connect_model(authority_controller.authorizations_controller);
 			accounts_view.connect_model(authority_controller.accounts_tree_store);
 			selectable_action_tree_view.connect_model(authority_controller.actions_tree_store);
-			save_authority.connect(authority_controller.save_changes);
 		}
 	}
 }

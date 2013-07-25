@@ -23,8 +23,9 @@
  
  namespace PolicyMan.Controllers {
 	 public class ActionsTreeStore : TreeStore, IController {
-		public string search_string {get; set; default="";}
+		private ActionManagerController action_manager_controller { get; private set; }
 		public signal void action_selected(PolicyMan.Common.Action action);
+		public string search_string {get; set; default="";}
 		
 		public enum ColumnTypes
 		{
@@ -37,14 +38,24 @@
 		}
 		
 		public TreeModelFilter tree_store_filter { get; private set; }
+		
+		public void on_save_changes() {
+			action_manager_controller.save_changes();
+		}
 	
-		public ActionsTreeStore() {
+		public ActionsTreeStore(ActionManagerController action_manager_controller) {
+			this.action_manager_controller = action_manager_controller;
+			
 			tree_store_filter = new TreeModelFilter(this, null);
 			tree_store_filter.set_visible_func(visibility_func);
 			set_column_types(new Type[] {typeof(string), typeof (string), typeof (string), typeof(PolicyMan.Common.Action), typeof(bool), typeof(bool)});
 			
-			// Create bindings
+			init_bindings();
+		}
+
+		private void init_bindings() {
 			this.notify["search-string"].connect((sender) => { tree_store_filter.refilter();});
+			action_manager_controller.actions_changed.connect(set_actions);
 		}
 
 		private bool visibility_func(TreeModel model, TreeIter iter) {
@@ -124,8 +135,12 @@
 			return false;
 		}
 
-		public void set_actions(Gee.List<PolicyMan.Common.Action> actions) {
+		public void set_actions(Gee.List<PolicyMan.Common.Action> ?actions) {
 			clear();
+			
+			if (actions == null) {
+				return;
+			}
 			
 			// Parse policies			
 			foreach (PolicyMan.Common.Action action in actions) {

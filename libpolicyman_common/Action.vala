@@ -28,40 +28,7 @@ namespace PolicyMan.Common {
 		public string description { get; set; default = ""; }
 		public string message { get; set; default = ""; }
 		public bool action_changed { get; set; default = false; }
-		private Gee.List<Authority> priv_authorities;
-		public Gee.List<Authority> authorities { 
-			get {
-				if (priv_authorities == null) {
-					authorities = new ObservableList<Authority>();
-				}
-				
-				return priv_authorities;
-			}
-			set {
-				if (priv_authorities != null) {
-					(priv_authorities as ObservableList<Authority>).object_added.disconnect(authority_added);
-					(priv_authorities as ObservableList<Authority>).object_removed.disconnect(authority_removed);
-				}
-				
-				priv_authorities = value;
-				(priv_authorities as ObservableList<Authority>).object_added.connect(authority_added);
-				(priv_authorities as ObservableList<Authority>).object_removed.connect(authority_removed);
-			}
-		}
 		public Authorizations authorizations { get; set; default = new Authorizations(); }
-		
-		private void authority_added(Authority authority) {
-			// Add the action to the authority
-			if (!authority.actions.contains(this)) {
-				authority.actions.add(this);
-			}
-		}
-		
-		private void authority_removed(Authority authority) {
-			if (authority.actions.contains(this)) {
-				authority.actions.remove(this);
-			}
-		}
 
 		public void copy_to(Action dest_action) {
 			dest_action.vendor = vendor;
@@ -93,8 +60,7 @@ namespace PolicyMan.Common {
 				new Variant.string(icon_name),
 				new Variant.string(description),
 				new Variant.string(message),
-				new Variant.boolean(action_changed),
-				authorizations.to_variant(),
+				new Variant.boolean(action_changed)
 			};
 			
 			return new Variant.tuple(variant_arr);
@@ -112,7 +78,6 @@ namespace PolicyMan.Common {
 			description = variant.get_child_value(4).get_string();
 			message = variant.get_child_value(5).get_string();
 			action_changed = variant.get_child_value(6).get_boolean();
-			authorizations.from_variant(variant.get_child_value(7));
 		}
 	}
 }

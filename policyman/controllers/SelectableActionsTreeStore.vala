@@ -30,8 +30,8 @@
 		public signal void selectable_action_selected(PolicyMan.Common.Action action);
 		public signal void selectable_action_deselected(PolicyMan.Common.Action action);
 		
-		public SelectableActionsTreeStore() {
-			base();
+		public SelectableActionsTreeStore(ActionManagerController action_manager_controller) {
+			base(action_manager_controller);
 			true_value.set_boolean(true);
 			false_value.set_boolean(false);
 		}
@@ -62,7 +62,7 @@
 		
 		public void set_selected_actions(Gee.List<PolicyMan.Common.Action> selected_actions) {	
 			this._selected_actions = selected_actions;
-					
+			
 			TreeIter tree_iter;
 			if (!get_iter_first(out tree_iter)) {
 				return;
