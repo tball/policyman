@@ -49,7 +49,7 @@ namespace PolicyMan {
 			
 			// Fetch authorities
 			var authorities = get_authorities();
-
+			
 			// Convert actions to our own format
 			var actions = new ArrayList<PolicyMan.Common.Action>();
 			for (var i = 0; i < action_descriptors.length(); i++) {
@@ -65,7 +65,71 @@ namespace PolicyMan {
 			var container = new Container(actions, authorities);
 			container.attach_actions_to_authorities();
 			
+			// Remove authority duplicates
+			authorities = filter_authoritites(authorities);
+			
 			return container.to_variant();
+		}
+		
+		private Gee.List<PolicyMan.Common.Authority> filter_authoritites(Gee.List<PolicyMan.Common.Authority> unfiltered_authorities) {
+			// If authorities with the same title exists, merge them into one authority
+			var filtered_authorities = new ArrayList<PolicyMan.Common.Authority>();
+			var prefix_string = "*";
+			for (var i = 0; i < unfiltered_authorities.size; i++) {
+				var authority1 = unfiltered_authorities[i];
+				for (var j = i + 1; j < unfiltered_authorities.size; j++) {
+					var authority2 = unfiltered_authorities[j];
+					
+					if (authority1.title == authority2.title) {
+						if (can_authorities_be_merged(authority1, authority2)) {
+							merge_authorities(authority1, authority2);
+							unfiltered_authorities.remove_at(j);
+							j--;
+						}
+						else {
+							// Hmm we can't merge them, so we must rename one of them
+							authority2.title = authority2.title + prefix_string;
+						}
+					}
+				}
+				filtered_authorities.add(authority1);
+			}
+			return filtered_authorities;
+		}
+		
+		private bool can_authorities_be_merged(PolicyMan.Common.Authority authority1, PolicyMan.Common.Authority authority2) {
+			// If their title are the same
+			if (authority1.title != authority2.title) {
+				return false;
+			}
+			
+			if (authority1.authorizations.allow_any != authority2.authorizations.allow_any) {
+				return false;
+			}
+			
+			if (authority1.authorizations.allow_active != authority2.authorizations.allow_active) {
+				return false;
+			}
+			
+			if (authority1.authorizations.allow_inactive != authority2.authorizations.allow_inactive) {
+				return false;
+			}
+			
+			return true;
+		}
+		
+		private void merge_authorities(PolicyMan.Common.Authority authority1, PolicyMan.Common.Authority authority2) {
+			foreach (var account in authority2.accounts) {
+				if (!authority1.accounts.contains(account)) {
+					authority1.accounts.add(account);
+				}
+			}
+			
+			foreach (var action in authority2.actions) {
+				if (!authority1.actions.contains(action)) {
+					authority1.actions.add(action);
+				}
+			}
 		}
 		
 		private Gee.List<PolicyMan.Common.Authority> get_authorities() {

@@ -76,9 +76,32 @@ namespace PolicyMan.Common {
 			// Here we are going to attach the authorities to the actions
 			foreach(var authority in authorities) {
 				foreach(var action in actions) {
-					// TODO: Create smarter parsing of the actions_string (including wildcards etc.)
-					if (authority.actions_string.contains(action.id)) {
-						authority.actions.add(action);
+					var action_strings = authority.actions_string.split(";");
+					foreach (var action_string in action_strings) {
+						// Split the search up, if it contains wildcards
+						var action_is_found = true;
+						if (action_string.contains("*")) {
+							var action_string_search_criterias = action_string.split("*");
+							for (var i = 0; i < action_string_search_criterias.length; i++) {
+								// Remove "" from search criterias
+								var action_string_search_criteria = action_string_search_criterias[i];
+								if (action_string_search_criteria == "") {
+									continue;
+								}
+								if (!action.id.contains(action_string_search_criteria)) {
+									action_is_found = false;
+									break;
+								}
+							}
+							if (action_is_found) {
+								authority.actions.add(action);
+							}
+						}
+						else {
+							if (action_string == action.id) {
+								authority.actions.add(action);
+							}
+						}
 					}
 				}
 			}
